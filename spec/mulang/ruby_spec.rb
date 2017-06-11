@@ -66,6 +66,14 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'lambdas' do
+      let(:code) { %q{[].map { |x, y| 1 }} }
+      skip { expect(result).to eq tag: :MuList, contents: [
+                                                  Mulang::Ruby.number(4),
+                                                  Mulang::Ruby.number(5)] }
+      it { check_valid result }
+    end
+
     context 'message sends' do
       let(:code) { %q{
         a = 2
