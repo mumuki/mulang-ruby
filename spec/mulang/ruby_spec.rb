@@ -41,6 +41,31 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'ints' do
+      let(:code) { %q{60} }
+      it { expect(result).to eq tag: :MuNumber, contents: 60 }
+    end
+
+    context 'doubles' do
+      let(:code) { %q{60.4} }
+      it { expect(result).to eq tag: :MuNumber, contents: 60.4 }
+      it { check_valid result }
+    end
+
+    context 'booleans' do
+      let(:code) { %q{true} }
+      it { expect(result).to eq tag: :MuBool, contents: true }
+      it { check_valid result }
+    end
+
+    context 'lists' do
+      let(:code) { %q{[4, 5]} }
+      it { expect(result).to eq tag: :MuList, contents: [
+                                                  Mulang::Ruby.number(4),
+                                                  Mulang::Ruby.number(5)] }
+      it { check_valid result }
+    end
+
     context 'message sends' do
       let(:code) { %q{
         a = 2

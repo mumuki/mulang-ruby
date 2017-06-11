@@ -16,6 +16,14 @@ module Mulang::Ruby
       contents: [ sender, {tag: :Reference, contents: message}, args ] }
   end
 
+  def self.reference(name)
+    {tag: :Reference, contents: name}
+  end
+
+  def self.number(value)
+    {tag: :MuNumber, contents: value}
+  end
+
   class AstProcessor < AST::Processor
     include AST::Sexp
 
@@ -72,8 +80,12 @@ module Mulang::Ruby
 
     def on_int(node)
       value, _ = *node
-      { tag: :MuNumber,
-        contents: value }
+      Mulang::Ruby.number(value)
+    end
+
+    def on_float(node)
+      value, _ = *node
+      Mulang::Ruby.number(value)
     end
 
     def on_if(node)
@@ -89,7 +101,7 @@ module Mulang::Ruby
 
     def on_lvar(node)
       value = *node
-      {tag: :Reference, contents: value.first}
+      Mulang::Ruby.reference(value.first)
     end
 
     def on_lvasgn(node)
@@ -99,9 +111,21 @@ module Mulang::Ruby
 
     def on_const(node)
       ns, value = *node
-      {tag: :Reference, contents: value}
+      Mulang::Ruby.reference(value)
     end
 
+    def on_true(node)
+      {tag: :MuBool, contents: true}
+    end
+
+    def on_false(node)
+      {tag: :MuBool, contents: false}
+    end
+
+    def on_array(node)
+      elements = *node
+      {tag: :MuList, contents: process_all(elements)}
+    end
 
     def handler_missing(*args)
       puts args
