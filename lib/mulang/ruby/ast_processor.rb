@@ -6,11 +6,14 @@ module Mulang::Ruby
   def self.simple_method(name, args, body)
     { tag: :Method,
       contents: [
-        name,
-        [
+        name, [
           [ args, {:tag=>:UnguardedBody, :contents => body }]]
-        ]
-    }
+        ]}
+  end
+
+  def self.simple_send(sender, message, args)
+    { tag: :Send,
+      contents: [ sender, {tag: :Reference, contents: message}, args ] }
   end
 
   class AstProcessor < AST::Processor
@@ -40,12 +43,7 @@ module Mulang::Ruby
       receptor, message, *args = *node
       receptor ||= s(:self)
 
-      { tag: :Send,
-        contents: [
-          process(receptor),
-          {tag: :Reference, contents: message},
-          process_all(args)
-        ]}
+      Mulang::Ruby.simple_send process(receptor), message, process_all(args)
     end
 
     def on_nil(_)
@@ -70,6 +68,22 @@ module Mulang::Ruby
       value, _ = *node
       { tag: :MuString,
         contents: value }
+    end
+
+    def on_if(node)
+      condition, if_true, if_false = *node
+      if_true  ||= s(:nil)
+      if_false ||= s(:nil)
+
+      {tag: :If, contents: [
+        process(condition),
+        process(if_true),
+        process(if_false) ]}
+    end
+
+    def handler_missing(*args)
+      puts args
+      { tag: :Other }
     end
   end
 end

@@ -23,13 +23,3 @@ def check_valid(mulang_ast)
   expect(out['tag']).to eq 'AnalysisCompleted'
 end
 
-
-def simple_method(name, args, body)
-  { tag: :Method,
-    contents: [
-      name,
-      [
-        [ args, {:tag=>:UnguardedBody, :contents => body }]]
-      ]
-  }
-end

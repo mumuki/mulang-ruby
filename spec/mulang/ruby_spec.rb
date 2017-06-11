@@ -43,15 +43,14 @@ describe Mulang::Ruby do
       it { expect(result).to eq tag: :Object,
                                 contents: [
                                   :Pepita,
-                                  Mulang::Ruby.simple_method(:canta!, [], {
-                                    tag: :Send,
-                                    contents: [
+                                  Mulang::Ruby.simple_method(
+                                    :canta!,
+                                    [],
+                                    Mulang::Ruby.simple_send(
                                       {tag: :Self},
-                                      {tag: :Reference, contents: :puts},
+                                      :puts,
                                       [{tag: :MuString, contents: 'pri'},
-                                       {tag: :MuString, contents: 'pri'}]
-                                    ]
-                                  })
+                                       {tag: :MuString, contents: 'pri'}]))
                                 ]}
       it { check_valid result }
     end
@@ -71,22 +70,14 @@ describe Mulang::Ruby do
                                   Mulang::Ruby.simple_method(:vola!, [], {
                                     tag: :Sequence,
                                     contents: [
-                                      {
-                                        tag: :Send,
-                                        contents: [
-                                          {tag: :Self},
-                                          {tag: :Reference, contents: :puts},
-                                          [{tag: :MuString, contents: 'vuelo'}]
-                                        ]
-                                      },
-                                      {
-                                        tag: :Send,
-                                        contents: [
-                                          {tag: :Self},
-                                          {tag: :Reference, contents: :puts},
-                                          [{tag: :MuString, contents: 'luego existo'}]
-                                        ]
-                                      }
+                                      Mulang::Ruby.simple_send(
+                                        {tag: :Self},
+                                        :puts,
+                                        [{tag: :MuString, contents: 'vuelo'}]),
+                                      Mulang::Ruby.simple_send(
+                                        {tag: :Self},
+                                        :puts,
+                                        [{tag: :MuString, contents: 'luego existo'}])
                                     ]
                                   })
                                 ] }
@@ -111,5 +102,117 @@ describe Mulang::Ruby do
                                 ]}
       it { check_valid result }
     end
+
+    context 'module with if-else' do
+      let(:code) { %q{
+        module Pepita
+          def self.decidi!
+            if esta_bien?
+              hacelo!
+            else
+              no_lo_hagas!
+            end
+          end
+        end
+      } }
+      it { expect(result).to eq tag: :Object,
+                                contents: [
+                                  :Pepita,
+                                  Mulang::Ruby.simple_method(
+                                    :decidi!,
+                                    [],
+                                    { tag: :If,
+                                      contents: [
+                                        Mulang::Ruby.simple_send(
+                                          {tag: :Self},
+                                          :esta_bien?,
+                                          []),
+                                        Mulang::Ruby.simple_send(
+                                          {tag: :Self},
+                                          :hacelo!,
+                                          []),
+                                        Mulang::Ruby.simple_send(
+                                          {tag: :Self},
+                                          :no_lo_hagas!,
+                                          [])
+                                      ]})
+                                ]}
+      it { check_valid result }
+    end
+
+    context 'module with if' do
+      let(:code) { %q{
+        module Pepita
+          def self.decidi!
+            if esta_bien?
+              hacelo!
+            end
+          end
+        end
+      } }
+      it { expect(result).to eq tag: :Object,
+                                contents: [
+                                  :Pepita,
+                                  Mulang::Ruby.simple_method(
+                                    :decidi!,
+                                    [],
+                                    { tag: :If,
+                                      contents: [
+                                        Mulang::Ruby.simple_send(
+                                          {tag: :Self},
+                                          :esta_bien?,
+                                          []),
+                                        Mulang::Ruby.simple_send(
+                                          {tag: :Self},
+                                          :hacelo!,
+                                          []),
+                                        {tag: :MuNull}
+                                      ]})
+                                ]}
+      it { check_valid result }
+    end
+
+    context 'module with if' do
+      let(:code) { %q{
+        module Pepita
+          def self.decidi!
+            unless esta_bien?
+              hacelo!
+            end
+          end
+        end
+      } }
+      it { expect(result).to eq tag: :Object,
+                                contents: [
+                                  :Pepita,
+                                  Mulang::Ruby.simple_method(
+                                    :decidi!,
+                                    [],
+                                    { tag: :If,
+                                      contents: [
+                                        Mulang::Ruby.simple_send(
+                                          {tag: :Self},
+                                          :esta_bien?,
+                                          []),
+                                        {tag: :MuNull},
+                                        Mulang::Ruby.simple_send(
+                                          {tag: :Self},
+                                          :hacelo!,
+                                          [])
+                                      ]})
+                                ]}
+      it { check_valid result }
+    end
+
+    context 'unsupported features' do
+      let(:code) { %q{
+        class Foo
+          include Bar
+        end
+      } }
+      it { expect(result).to eq tag: :Other }
+      it { check_valid result }
+    end
   end
 end
+
