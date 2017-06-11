@@ -70,6 +70,12 @@ module Mulang::Ruby
         contents: value }
     end
 
+    def on_int(node)
+      value, _ = *node
+      { tag: :MuNumber,
+        contents: value }
+    end
+
     def on_if(node)
       condition, if_true, if_false = *node
       if_true  ||= s(:nil)
@@ -80,6 +86,22 @@ module Mulang::Ruby
         process(if_true),
         process(if_false) ]}
     end
+
+    def on_lvar(node)
+      value = *node
+      {tag: :Reference, contents: value.first}
+    end
+
+    def on_lvasgn(node)
+      id, value = *node
+      {tag: :Assignment, contents: [id, process(value)]}
+    end
+
+    def on_const(node)
+      ns, value = *node
+      {tag: :Reference, contents: value}
+    end
+
 
     def handler_missing(*args)
       puts args

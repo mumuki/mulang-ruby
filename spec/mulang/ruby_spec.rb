@@ -17,6 +17,55 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'modules and variables' do
+      let(:code) { %q{
+        module Pepita
+        end
+        module Pepona
+        end
+        otra_pepita = Pepita
+        otra_pepona = Pepona
+      } }
+      it { expect(result[:tag]).to eq :Sequence }
+      it { expect(result[:contents].length).to eq 4 }
+    end
+
+    context 'variables' do
+      let(:code) { %q{
+        otra_pepita = Pepita
+      } }
+      it { expect(result).to eq tag: :Assignment,
+                                contents: [
+                                  :otra_pepita,
+                                  {tag: :Reference, contents: :Pepita}]}
+      it { check_valid result }
+    end
+
+    context 'message sends' do
+      let(:code) { %q{
+        a = 2
+        a + 6
+      } }
+      it { expect(result[:contents][1]).to eq Mulang::Ruby.simple_send(
+                                                {tag: :Reference, contents: :a},
+                                                :+,
+                                                [{tag: :MuNumber, contents: 6}]) }
+      it { check_valid result }
+    end
+
+    context 'modules and variables' do
+      let(:code) { %q{
+        module Pepita
+        end
+        module Pepona
+        end
+        otra_pepita = Pepita
+        otra_pepona = Pepona
+      } }
+      it { expect(result[:tag]).to eq :Sequence }
+      it { check_valid result }
+    end
+
     context 'module with module' do
       let(:code) { %q{
         module Pepita
@@ -172,7 +221,7 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
-    context 'module with if' do
+    context 'module with unless' do
       let(:code) { %q{
         module Pepita
           def self.decidi!
@@ -204,6 +253,34 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'module with suffix unless' do
+      let(:code) { %q{
+        module Pepita
+          def self.decidi!
+            hacelo! unless esta_bien?
+          end
+        end
+      } }
+      it { expect(result).to eq tag: :Object,
+                                contents: [
+                                  :Pepita,
+                                  Mulang::Ruby.simple_method(
+                                    :decidi!,
+                                    [],
+                                    { tag: :If,
+                                      contents: [
+                                        Mulang::Ruby.simple_send(
+                                          {tag: :Self},
+                                          :esta_bien?,
+                                          []),
+                                        {tag: :MuNull},
+                                        Mulang::Ruby.simple_send(
+                                          {tag: :Self},
+                                          :hacelo!,
+                                          [])
+                                      ]})
+                                ]}
+    end
     context 'unsupported features' do
       let(:code) { %q{
         class Foo
