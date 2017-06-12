@@ -51,7 +51,7 @@ module Mulang::Ruby
     end
 
     def on_defs(node)
-      target, id, args, body = *node
+      _target, id, args, body = *node
       body ||= s(:nil)
 
       Mulang::Ruby.simple_method id, process_all(args), process(body)
@@ -120,15 +120,15 @@ module Mulang::Ruby
     end
 
     def on_const(node)
-      ns, value = *node
+      _ns, value = *node
       Mulang::Ruby.reference(value)
     end
 
-    def on_true(node)
+    def on_true(_)
       {tag: :MuBool, contents: true}
     end
 
-    def on_false(node)
+    def on_false(_)
       {tag: :MuBool, contents: false}
     end
 
