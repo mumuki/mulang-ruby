@@ -314,10 +314,56 @@ describe Mulang::Ruby do
                                       ]})
                                 ]}
     end
-    context 'unsupported features' do
+
+    context 'simple class declararions' do
+      let(:code) { %q{
+        class Foo
+        end
+      } }
+      it { expect(result).to eq tag: :Class,
+                                contents: [
+                                  :Foo,
+                                  :Object,
+                                  {tag: :MuNull}
+                                ]}
+      it { check_valid result }
+    end
+
+    context 'simple class declaration with inheritance' do
+      let(:code) { %q{
+        class Foo < Bar
+        end
+      } }
+      it { expect(result).to eq tag: :Class,
+                                contents: [
+                                  :Foo,
+                                  :Bar,
+                                  {tag: :MuNull}
+                                ]}
+      it { check_valid result }
+    end
+
+    context 'mixins' do
       let(:code) { %q{
         class Foo
           include Bar
+        end
+      } }
+      it { expect(result).to eq tag: :Class,
+                                contents: [
+                                  :Foo,
+                                  :Object,
+                                  Mulang::Ruby.simple_send(
+                                    {tag: :Self},
+                                    :include,
+                                    [{tag: :Reference, contents: :Bar}]),
+                                  ] }
+      it { check_valid result }
+    end
+
+    context 'unsupported features' do
+      let(:code) { %q{
+        class << self
         end
       } }
       it { expect(result).to eq tag: :Other }

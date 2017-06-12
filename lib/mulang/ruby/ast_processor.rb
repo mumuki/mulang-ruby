@@ -27,13 +27,23 @@ module Mulang::Ruby
   class AstProcessor < AST::Processor
     include AST::Sexp
 
+    def on_class(node)
+      name, superclass, body = *node
+      body ||= s(:nil)
+
+      _, class_name = *name
+      _, superclass_name = *superclass
+
+      {tag: :Class, contents: [ class_name, (superclass_name || :Object), process(body) ]}
+    end
+
     def on_module(node)
       name, body = *node
       body ||= s(:nil)
 
-      _, object_id = *name
+      _, module_name = *name
 
-      {tag: :Object, contents: [ object_id, process(body) ]}
+      {tag: :Object, contents: [ module_name, process(body) ]}
     end
 
     def on_begin(node)
@@ -131,5 +141,6 @@ module Mulang::Ruby
       puts args
       { tag: :Other }
     end
+
   end
 end
