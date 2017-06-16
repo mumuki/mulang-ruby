@@ -37,7 +37,7 @@ describe Mulang::Ruby do
       it { expect(result).to eq tag: :Assignment,
                                 contents: [
                                   :otra_pepita,
-                                  {tag: :Reference, contents: :Pepita}]}
+                                  Mulang::Ruby.reference(:Pepita)]}
       it { check_valid result }
     end
 
@@ -49,6 +49,30 @@ describe Mulang::Ruby do
     context 'doubles' do
       let(:code) { %q{60.4} }
       it { expect(result).to eq tag: :MuNumber, contents: 60.4 }
+      it { check_valid result }
+    end
+
+    context 'implicit sends' do
+      let(:code) { %q{m 5} }
+      it { expect(result).to eq tag: :Send, contents: [{tag: :Self}, Mulang::Ruby.reference(:m), [Mulang::Ruby.number(5)]] }
+      it { check_valid result }
+    end
+
+    context 'math expressions' do
+      let(:code) { %q{4 + 5} }
+      it { expect(result).to eq tag: :Send, contents: [Mulang::Ruby.number(4), Mulang::Ruby.reference(:+), [Mulang::Ruby.number(5)]] }
+      it { check_valid result }
+    end
+
+    context 'equal comparisons' do
+      let(:code) { %q{ 4 == 3 } }
+      it { expect(result).to eq tag: :Send, contents: [Mulang::Ruby.number(4), {tag: :Equal}, [Mulang::Ruby.number(3)]] }
+      it { check_valid result }
+    end
+
+    context 'not equal comparisons' do
+      let(:code) { %q{ 4 != 3 } }
+      it { expect(result).to eq tag: :Send, contents: [Mulang::Ruby.number(4), {tag: :NotEqual}, [Mulang::Ruby.number(3)]] }
       it { check_valid result }
     end
 
@@ -80,9 +104,9 @@ describe Mulang::Ruby do
         a + 6
       } }
       it { expect(result[:contents][1]).to eq Mulang::Ruby.simple_send(
-                                                {tag: :Reference, contents: :a},
+                                                Mulang::Ruby.reference(:a),
                                                 :+,
-                                                [{tag: :MuNumber, contents: 6}]) }
+                                                [Mulang::Ruby.number(6)]) }
       it { check_valid result }
     end
 
@@ -356,7 +380,7 @@ describe Mulang::Ruby do
                                   Mulang::Ruby.simple_send(
                                     {tag: :Self},
                                     :include,
-                                    [{tag: :Reference, contents: :Bar}]),
+                                    [Mulang::Ruby.reference(:Bar)]),
                                   ] }
       it { check_valid result }
     end

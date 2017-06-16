@@ -7,13 +7,17 @@ module Mulang::Ruby
     { tag: :Method,
       contents: [
         name, [
-          [ args, {:tag=>:UnguardedBody, :contents => body }]]
+          [ args, {tag: :UnguardedBody, contents: body }]]
         ]}
   end
 
   def self.simple_send(sender, message, args)
+    send sender, {tag: :Reference, contents: message}, args
+  end
+
+  def self.send(sender, message, args)
     { tag: :Send,
-      contents: [ sender, {tag: :Reference, contents: message}, args ] }
+      contents: [ sender, message, args ] }
   end
 
   def self.reference(name)
@@ -61,7 +65,15 @@ module Mulang::Ruby
       receptor, message, *args = *node
       receptor ||= s(:self)
 
-      Mulang::Ruby.simple_send process(receptor), message, process_all(args)
+      if message == :==
+        message = {tag: :Equal}
+      elsif message == :!=
+        message = {tag: :NotEqual}
+      else
+        message = {tag: :Reference, contents: message}
+      end
+
+      Mulang::Ruby.send process(receptor), message, process_all(args)
     end
 
     def on_nil(_)
