@@ -1,35 +1,7 @@
 module Mulang::Ruby
-  def self.param(name)
-    { tag: :VariablePattern, contents: name }
-  end
-
-  def self.simple_method(name, args, body)
-    { tag: :Method,
-      contents: [
-        name, [
-          [ args, {tag: :UnguardedBody, contents: body }]]
-        ]}
-  end
-
-  def self.simple_send(sender, message, args)
-    send sender, {tag: :Reference, contents: message}, args
-  end
-
-  def self.send(sender, message, args)
-    { tag: :Send,
-      contents: [ sender, message, args ] }
-  end
-
-  def self.reference(name)
-    {tag: :Reference, contents: name}
-  end
-
-  def self.number(value)
-    {tag: :MuNumber, contents: value}
-  end
-
   class AstProcessor < AST::Processor
     include AST::Sexp
+    include Mulang::Sexp
 
     def on_class(node)
       name, superclass, body = *node
@@ -38,7 +10,7 @@ module Mulang::Ruby
       _, class_name = *name
       _, superclass_name = *superclass
 
-      {tag: :Class, contents: [ class_name, (superclass_name || :Object), process(body) ]}
+      ms :Class, class_name, (superclass_name || :Object), process(body)
     end
 
     def on_module(node)
@@ -47,18 +19,18 @@ module Mulang::Ruby
 
       _, module_name = *name
 
-      {tag: :Object, contents: [ module_name, process(body) ]}
+      ms :Object, module_name, process(body)
     end
 
     def on_begin(node)
-      { tag: :Sequence, contents: process_all(node) }
+      ms :Sequence, *process_all(node)
     end
 
     def on_defs(node)
       _target, id, args, body = *node
       body ||= s(:nil)
 
-      Mulang::Ruby.simple_method id, process_all(args), process(body)
+      simple_method id, process_all(args), process(body)
     end
 
     def on_send(node)
@@ -73,41 +45,40 @@ module Mulang::Ruby
         message = {tag: :Reference, contents: message}
       end
 
-      Mulang::Ruby.send process(receptor), message, process_all(args)
+      ms :Send, process(receptor), message, process_all(args)
     end
 
     def on_nil(_)
-      {tag: :MuNull}
+      ms :MuNull
     end
 
     def on_self(_)
-      {tag: :Self}
+      ms :Self
     end
 
     def on_arg(node)
       name, _ = *node
-      Mulang::Ruby.param name
+      ms :VariablePattern, name
     end
 
     def on_restarg(node)
       name, _ = *node
-      Mulang::Ruby.param name
+      ms :VariablePattern, name
     end
 
     def on_str(node)
       value, _ = *node
-      { tag: :MuString,
-        contents: value }
+      ms :MuString, value
     end
 
     def on_int(node)
       value, _ = *node
-      Mulang::Ruby.number(value)
+      ms :MuNumber, value
     end
 
     def on_float(node)
       value, _ = *node
-      Mulang::Ruby.number(value)
+      ms :MuNumber, value
     end
 
     def on_if(node)
@@ -115,43 +86,40 @@ module Mulang::Ruby
       if_true  ||= s(:nil)
       if_false ||= s(:nil)
 
-      {tag: :If, contents: [
-        process(condition),
-        process(if_true),
-        process(if_false) ]}
+      ms :If, process(condition), process(if_true), process(if_false)
     end
 
     def on_lvar(node)
       value = *node
-      Mulang::Ruby.reference(value.first)
+      ms :Reference, value.first
     end
 
     def on_lvasgn(node)
       id, value = *node
-      {tag: :Assignment, contents: [id, process(value)]}
+      ms :Assignment, id, process(value)
     end
 
     def on_const(node)
       _ns, value = *node
-      Mulang::Ruby.reference(value)
+      ms :Reference, value
     end
 
     def on_true(_)
-      {tag: :MuBool, contents: true}
+      ms :MuBool, true
     end
 
     def on_false(_)
-      {tag: :MuBool, contents: false}
+      ms :MuBool, false
     end
 
     def on_array(node)
       elements = *node
-      {tag: :MuList, contents: process_all(elements)}
+      ms :MuList, *process_all(elements)
     end
 
     def handler_missing(*args)
       puts args
-      { tag: :Other }
+      ms :Other
     end
 
   end

@@ -1,7 +1,8 @@
-require 'parser/current'
 require 'ast'
+require 'parser/current'
 require 'mumukit/core'
 
+require_relative "./sexp"
 require_relative "./ruby/version"
 
 module Mulang

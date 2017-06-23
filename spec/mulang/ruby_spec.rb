@@ -1,6 +1,8 @@
 require "spec_helper"
 
 describe Mulang::Ruby do
+  include Mulang::Sexp
+
   it "has a version number" do
     expect(Mulang::Ruby::VERSION).not_to be nil
   end
@@ -12,8 +14,7 @@ describe Mulang::Ruby do
         module Pepita
         end
       } }
-      it { expect(result).to eq tag: :Object,
-                                contents: [:Pepita, { tag: :MuNull }] }
+      it { expect(result).to eq ms :Object, :Pepita, ms(:MuNull) }
       it { check_valid result }
     end
 
@@ -34,67 +35,60 @@ describe Mulang::Ruby do
       let(:code) { %q{
         otra_pepita = Pepita
       } }
-      it { expect(result).to eq tag: :Assignment,
-                                contents: [
-                                  :otra_pepita,
-                                  Mulang::Ruby.reference(:Pepita)]}
+      it { expect(result).to eq ms :Assignment, :otra_pepita, ms(:Reference, :Pepita )}
       it { check_valid result }
     end
 
     context 'ints' do
       let(:code) { %q{60} }
-      it { expect(result).to eq tag: :MuNumber, contents: 60 }
+      it { expect(result).to eq ms(:MuNumber, 60) }
     end
 
     context 'doubles' do
       let(:code) { %q{60.4} }
-      it { expect(result).to eq tag: :MuNumber, contents: 60.4 }
+      it { expect(result).to eq ms(:MuNumber, 60.4) }
       it { check_valid result }
     end
 
     context 'implicit sends' do
       let(:code) { %q{m 5} }
-      it { expect(result).to eq tag: :Send, contents: [{tag: :Self}, Mulang::Ruby.reference(:m), [Mulang::Ruby.number(5)]] }
+      it { expect(result).to eq ms :Send, ms(:Self), ms(:Reference, :m), [ms(:MuNumber, 5)] }
       it { check_valid result }
     end
 
     context 'math expressions' do
       let(:code) { %q{4 + 5} }
-      it { expect(result).to eq tag: :Send, contents: [Mulang::Ruby.number(4), Mulang::Ruby.reference(:+), [Mulang::Ruby.number(5)]] }
+      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), ms(:Reference, :+), [ms(:MuNumber, 5)] }
       it { check_valid result }
     end
 
     context 'equal comparisons' do
       let(:code) { %q{ 4 == 3 } }
-      it { expect(result).to eq tag: :Send, contents: [Mulang::Ruby.number(4), {tag: :Equal}, [Mulang::Ruby.number(3)]] }
+      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), {tag: :Equal}, [ms(:MuNumber, 3)] }
       it { check_valid result }
     end
 
     context 'not equal comparisons' do
       let(:code) { %q{ 4 != 3 } }
-      it { expect(result).to eq tag: :Send, contents: [Mulang::Ruby.number(4), {tag: :NotEqual}, [Mulang::Ruby.number(3)]] }
+      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), {tag: :NotEqual}, [ms(:MuNumber, 3)] }
       it { check_valid result }
     end
 
     context 'booleans' do
       let(:code) { %q{true} }
-      it { expect(result).to eq tag: :MuBool, contents: true }
+      it { expect(result).to eq ms :MuBool, true }
       it { check_valid result }
     end
 
     context 'lists' do
       let(:code) { %q{[4, 5]} }
-      it { expect(result).to eq tag: :MuList, contents: [
-                                                  Mulang::Ruby.number(4),
-                                                  Mulang::Ruby.number(5)] }
+      it { expect(result).to eq ms :MuList,  ms(:MuNumber, 4), ms(:MuNumber, 5) }
       it { check_valid result }
     end
 
     context 'lambdas' do
       let(:code) { %q{[].map { |x, y| 1 }} }
-      skip { expect(result).to eq tag: :MuList, contents: [
-                                                  Mulang::Ruby.number(4),
-                                                  Mulang::Ruby.number(5)] }
+      skip { expect(result).to eq ms :MuList,  ms(:MuNumber, 4), ms(:MuNumber, 5) }
       it { check_valid result }
     end
 
@@ -103,10 +97,7 @@ describe Mulang::Ruby do
         a = 2
         a + 6
       } }
-      it { expect(result[:contents][1]).to eq Mulang::Ruby.simple_send(
-                                                Mulang::Ruby.reference(:a),
-                                                :+,
-                                                [Mulang::Ruby.number(6)]) }
+      it { expect(result[:contents][1]).to eq simple_send(ms(:Reference, :a), :+, [ms(:MuNumber, 6)]) }
       it { check_valid result }
     end
 
@@ -130,11 +121,7 @@ describe Mulang::Ruby do
           end
         end
       } }
-      it { expect(result).to eq tag: :Object,
-                                contents: [
-                                  :Pepita,
-                                  Mulang::Ruby.simple_method(:canta, [], {tag: :MuNull})
-                                ]}
+      it { expect(result).to eq ms(:Object, :Pepita, simple_method(:canta, [], ms(:MuNull))) }
       it { check_valid result }
     end
 
@@ -149,11 +136,11 @@ describe Mulang::Ruby do
       it { expect(result).to eq tag: :Object,
                                 contents: [
                                   :Pepita,
-                                  Mulang::Ruby.simple_method(
+                                  simple_method(
                                     :canta!,
                                     [],
-                                    Mulang::Ruby.simple_send(
-                                      {tag: :Self},
+                                    simple_send(
+                                      ms(:Self),
                                       :puts,
                                       [{tag: :MuString, contents: 'pri'},
                                        {tag: :MuString, contents: 'pri'}]))
@@ -173,15 +160,15 @@ describe Mulang::Ruby do
       it { expect(result).to eq tag: :Object,
                                 contents: [
                                   :Pepita,
-                                  Mulang::Ruby.simple_method(:vola!, [], {
+                                  simple_method(:vola!, [], {
                                     tag: :Sequence,
                                     contents: [
-                                      Mulang::Ruby.simple_send(
-                                        {tag: :Self},
+                                      simple_send(
+                                        ms(:Self),
                                         :puts,
                                         [{tag: :MuString, contents: 'vuelo'}]),
-                                      Mulang::Ruby.simple_send(
-                                        {tag: :Self},
+                                      simple_send(
+                                        ms(:Self),
                                         :puts,
                                         [{tag: :MuString, contents: 'luego existo'}])
                                     ]
@@ -197,15 +184,13 @@ describe Mulang::Ruby do
           end
         end
       } }
-      it { expect(result).to eq tag: :Object,
-                                contents: [
-                                  :Pepita,
-                                  Mulang::Ruby.simple_method(
-                                    :come!,
-                                    [Mulang::Ruby.param(:cantidad),
-                                     Mulang::Ruby.param(:unidad)],
-                                    {tag: :MuNull})
-                                ]}
+      it { expect(result)
+            .to eq ms(:Object,
+                        :Pepita,
+                        simple_method(
+                          :come!,
+                          [ms(:VariablePattern, :cantidad), ms(:VariablePattern, :unidad)],
+                          ms(:MuNull))) }
       it { check_valid result }
     end
 
@@ -224,21 +209,21 @@ describe Mulang::Ruby do
       it { expect(result).to eq tag: :Object,
                                 contents: [
                                   :Pepita,
-                                  Mulang::Ruby.simple_method(
+                                  simple_method(
                                     :decidi!,
                                     [],
                                     { tag: :If,
                                       contents: [
-                                        Mulang::Ruby.simple_send(
-                                          {tag: :Self},
+                                        simple_send(
+                                          ms(:Self),
                                           :esta_bien?,
                                           []),
-                                        Mulang::Ruby.simple_send(
-                                          {tag: :Self},
+                                        simple_send(
+                                          ms(:Self),
                                           :hacelo!,
                                           []),
-                                        Mulang::Ruby.simple_send(
-                                          {tag: :Self},
+                                        simple_send(
+                                          ms(:Self),
                                           :no_lo_hagas!,
                                           [])
                                       ]})
@@ -256,25 +241,13 @@ describe Mulang::Ruby do
           end
         end
       } }
-      it { expect(result).to eq tag: :Object,
-                                contents: [
+      it { expect(result).to eq ms(:Object,
                                   :Pepita,
-                                  Mulang::Ruby.simple_method(
-                                    :decidi!,
-                                    [],
-                                    { tag: :If,
-                                      contents: [
-                                        Mulang::Ruby.simple_send(
-                                          {tag: :Self},
-                                          :esta_bien?,
-                                          []),
-                                        Mulang::Ruby.simple_send(
-                                          {tag: :Self},
-                                          :hacelo!,
-                                          []),
-                                        {tag: :MuNull}
-                                      ]})
-                                ]}
+                                  simple_method(:decidi!, [],
+                                    ms(:If,
+                                      simple_send(ms(:Self), :esta_bien?, []),
+                                      simple_send(ms(:Self), :hacelo!, []),
+                                      ms(:MuNull)))) }
       it { check_valid result }
     end
 
@@ -288,25 +261,13 @@ describe Mulang::Ruby do
           end
         end
       } }
-      it { expect(result).to eq tag: :Object,
-                                contents: [
+      it { expect(result).to eq ms(:Object,
                                   :Pepita,
-                                  Mulang::Ruby.simple_method(
-                                    :decidi!,
-                                    [],
-                                    { tag: :If,
-                                      contents: [
-                                        Mulang::Ruby.simple_send(
-                                          {tag: :Self},
-                                          :esta_bien?,
-                                          []),
-                                        {tag: :MuNull},
-                                        Mulang::Ruby.simple_send(
-                                          {tag: :Self},
-                                          :hacelo!,
-                                          [])
-                                      ]})
-                                ]}
+                                  simple_method(:decidi!, [],
+                                    ms(:If,
+                                      simple_send(ms(:Self), :esta_bien?, []),
+                                      ms(:MuNull),
+                                      simple_send(ms(:Self),:hacelo!, [])))) }
       it { check_valid result }
     end
 
@@ -318,25 +279,13 @@ describe Mulang::Ruby do
           end
         end
       } }
-      it { expect(result).to eq tag: :Object,
-                                contents: [
+      it { expect(result).to eq ms(:Object,
                                   :Pepita,
-                                  Mulang::Ruby.simple_method(
-                                    :decidi!,
-                                    [],
-                                    { tag: :If,
-                                      contents: [
-                                        Mulang::Ruby.simple_send(
-                                          {tag: :Self},
-                                          :esta_bien?,
-                                          []),
-                                        {tag: :MuNull},
-                                        Mulang::Ruby.simple_send(
-                                          {tag: :Self},
-                                          :hacelo!,
-                                          [])
-                                      ]})
-                                ]}
+                                  simple_method(:decidi!, [],
+                                    ms(:If,
+                                      simple_send(ms(:Self), :esta_bien?, []),
+                                      ms(:MuNull),
+                                      simple_send(ms(:Self), :hacelo!, [])))) }
     end
 
     context 'simple class declararions' do
@@ -344,12 +293,7 @@ describe Mulang::Ruby do
         class Foo
         end
       } }
-      it { expect(result).to eq tag: :Class,
-                                contents: [
-                                  :Foo,
-                                  :Object,
-                                  {tag: :MuNull}
-                                ]}
+      it { expect(result).to eq ms(:Class, :Foo, :Object, ms(:MuNull)) }
       it { check_valid result }
     end
 
@@ -358,12 +302,7 @@ describe Mulang::Ruby do
         class Foo < Bar
         end
       } }
-      it { expect(result).to eq tag: :Class,
-                                contents: [
-                                  :Foo,
-                                  :Bar,
-                                  {tag: :MuNull}
-                                ]}
+      it { expect(result).to eq ms(:Class, :Foo, :Bar, ms(:MuNull)) }
       it { check_valid result }
     end
 
@@ -377,10 +316,10 @@ describe Mulang::Ruby do
                                 contents: [
                                   :Foo,
                                   :Object,
-                                  Mulang::Ruby.simple_send(
-                                    {tag: :Self},
+                                  simple_send(
+                                    ms(:Self),
                                     :include,
-                                    [Mulang::Ruby.reference(:Bar)]),
+                                    [ms(:Reference, :Bar)]),
                                   ] }
       it { check_valid result }
     end
