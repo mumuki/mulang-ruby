@@ -9,6 +9,6 @@ before_install:
 # Install bundler
 - gem install bundler -v 1.14.6
 # Install mulang
-- wget https://github.com/mumuki/mulang/releases/download/v1.0.0/mulang
+- wget https://github.com/mumuki/mulang/releases/download/v2.0.0/mulang
 - mv mulang ~/.local/bin/mulang
 - chmod +x ~/.local/bin/mulang
