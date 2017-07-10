@@ -1,7 +1,7 @@
 module Mulang::Ruby
   class AstProcessor < AST::Processor
     include AST::Sexp
-    include Mulang::Sexp
+    include Mulang::Ruby::Sexp
 
     def on_class(node)
       name, superclass, body = *node

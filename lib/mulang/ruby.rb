@@ -2,7 +2,6 @@ require 'ast'
 require 'parser/current'
 require 'mumukit/core'
 
-require_relative "./sexp"
 require_relative "./ruby/version"
 
 module Mulang
@@ -13,5 +12,6 @@ module Mulang
   end
 end
 
+require_relative "./ruby/sexp"
 require_relative './ruby/sexp_parser'
 require_relative './ruby/ast_processor'

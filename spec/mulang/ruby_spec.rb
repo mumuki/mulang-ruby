@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Mulang::Ruby do
-  include Mulang::Sexp
+  include Mulang::Ruby::Sexp
 
   it "has a version number" do
     expect(Mulang::Ruby::VERSION).not_to be nil
