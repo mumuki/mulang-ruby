@@ -386,6 +386,24 @@ describe Mulang::Ruby do
       it { expect(result).to eq ms :Other }
       it { check_valid result }
     end
+
+    context 'creation' do
+      let(:code) { %q{Object.new} }
+      it { expect(result).to eq simple_send(ms(:Reference, :Object), :new, []) }
+      it { check_valid result }
+    end
+
+    context 'ranges' do
+      let(:code) { %q{1..1024} }
+      it { expect(result).to eq ms :Other }
+      it { check_valid result }
+    end
+
+    context 'ranges with parenthesis and blocks' do
+      let(:code) { %q{l = (1..1024*1024*10).map { Object.new }} }
+      it { check_valid result }
+    end
+
   end
 end
 

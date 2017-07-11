@@ -23,7 +23,11 @@ module Mulang::Ruby
     end
 
     def on_begin(node)
-      ms :Sequence, *process_all(node)
+      {tag: :Sequence, contents: process_all(node)}
+    end
+
+    def on_irange(node)
+      ms :Other
     end
 
     def on_defs(node)
