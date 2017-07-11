@@ -9,6 +9,12 @@ describe Mulang::Ruby do
 
   describe '#parse' do
     let(:result) { Mulang::Ruby.parse code }
+
+    context 'syntax errors' do
+      let(:code) { %q{module Pepita} }
+      it { expect { result }.to raise_error 'Syntax error' }
+    end
+
     context 'simple module' do
       let(:code) { %q{
         module Pepita
@@ -74,9 +80,21 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
-    context 'booleans' do
+    context 'true' do
       let(:code) { %q{true} }
       it { expect(result).to eq ms :MuBool, true }
+      it { check_valid result }
+    end
+
+    context 'false' do
+      let(:code) { %q{false} }
+      it { expect(result).to eq ms :MuBool, false }
+      it { check_valid result }
+    end
+
+     context 'nil' do
+      let(:code) { %q{nil} }
+      it { expect(result).to eq ms :MuNull }
       it { check_valid result }
     end
 
@@ -312,15 +330,7 @@ describe Mulang::Ruby do
           include Bar
         end
       } }
-      it { expect(result).to eq tag: :Class,
-                                contents: [
-                                  :Foo,
-                                  :Object,
-                                  simple_send(
-                                    ms(:Self),
-                                    :include,
-                                    [ms(:Reference, :Bar)]),
-                                  ] }
+      it { expect(result).to eq ms :Class, :Foo, :Object, simple_send(ms(:Self), :include, [ms(:Reference, :Bar)]) }
       it { check_valid result }
     end
 
@@ -329,7 +339,7 @@ describe Mulang::Ruby do
         class << self
         end
       } }
-      it { expect(result).to eq tag: :Other }
+      it { expect(result).to eq ms :Other }
       it { check_valid result }
     end
   end
