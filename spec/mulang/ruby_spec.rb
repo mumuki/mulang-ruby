@@ -151,18 +151,9 @@ describe Mulang::Ruby do
           end
         end
       } }
-      it { expect(result).to eq tag: :Object,
-                                contents: [
-                                  :Pepita,
-                                  simple_method(
-                                    :canta!,
-                                    [],
-                                    simple_send(
-                                      ms(:Self),
-                                      :puts,
-                                      [{tag: :MuString, contents: 'pri'},
-                                       {tag: :MuString, contents: 'pri'}]))
-                                ]}
+      it { expect(result).to eq ms :Object, :Pepita, simple_method(:canta!, [],
+                                                    simple_send(ms(:Self), :puts, [ms(:MuString, 'pri'), ms(:MuString, 'pri')])) }
+
       it { check_valid result }
     end
 
@@ -321,6 +312,31 @@ describe Mulang::Ruby do
         end
       } }
       it { expect(result).to eq ms(:Class, :Foo, :Bar, ms(:MuNull)) }
+      it { check_valid result }
+    end
+
+    context 'simple inline class with method' do
+      let(:code) { %q{
+        class Pepita; def canta; end; end
+      } }
+      it { expect(result).to eq ms(:Class, :Pepita, :Object, simple_method(:canta, [], ms(:MuNull))) }
+      it { check_valid result }
+    end
+
+   context 'simple class with methods and parameters' do
+      let(:code) { %q{
+        class Pepita
+          def canta!(cancion)
+            puts cancion
+          end
+          def self.vola!(distancia)
+          end
+        end
+      } }
+      it { expect(result).to eq ms(:Class, :Pepita, :Object,
+                                  ms(:Sequence,
+                                    simple_method(:canta!, [ms(:VariablePattern, :cancion)], simple_send(ms(:Self), :puts, [ms(:Reference, :cancion)])),
+                                    simple_method(:vola!, [ms(:VariablePattern, :distancia)], ms(:MuNull)))) }
       it { check_valid result }
     end
 

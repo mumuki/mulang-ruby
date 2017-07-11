@@ -33,6 +33,13 @@ module Mulang::Ruby
       simple_method id, process_all(args), process(body)
     end
 
+    def on_def(node)
+      id, args, body = *node
+      body ||= s(:nil)
+
+      simple_method id, process_all(args), process(body)
+    end
+
     def on_send(node)
       receptor, message, *args = *node
       receptor ||= s(:self)
@@ -61,25 +68,19 @@ module Mulang::Ruby
       ms :VariablePattern, name
     end
 
-    def on_restarg(node)
-      name, _ = *node
-      ms :VariablePattern, name
-    end
+    alias on_restarg on_arg
 
     def on_str(node)
       value, _ = *node
       ms :MuString, value
     end
 
-    def on_int(node)
-      value, _ = *node
-      ms :MuNumber, value
-    end
-
     def on_float(node)
       value, _ = *node
       ms :MuNumber, value
     end
+
+    alias on_int on_float
 
     def on_if(node)
       condition, if_true, if_false = *node
