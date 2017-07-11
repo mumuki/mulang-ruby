@@ -40,19 +40,14 @@ module Mulang::Ruby
       simple_method id, process_all(args), process(body)
     end
 
+    def on_block(node)
+      send, parameters, body = *node
+      lambda = ms(:Lambda, process_all(parameters), process(body))
+      handle_send_with_args send, [lambda]
+    end
+
     def on_send(node)
-      receptor, message, *args = *node
-      receptor ||= s(:self)
-
-      if message == :==
-        message = {tag: :Equal}
-      elsif message == :!=
-        message = {tag: :NotEqual}
-      else
-        message = {tag: :Reference, contents: message}
-      end
-
-      ms :Send, process(receptor), message, process_all(args)
+      handle_send_with_args(node)
     end
 
     def on_nil(_)
@@ -69,6 +64,7 @@ module Mulang::Ruby
     end
 
     alias on_restarg on_arg
+    alias on_procarg0 on_arg
 
     def on_str(node)
       value, _ = *node
@@ -115,7 +111,7 @@ module Mulang::Ruby
 
     def on_array(node)
       elements = *node
-      ms :MuList, *process_all(elements)
+      {tag: :MuList, contents: process_all(elements)}
     end
 
     def handler_missing(*args)
@@ -123,5 +119,19 @@ module Mulang::Ruby
       ms :Other
     end
 
+    def handle_send_with_args(node, extra_args=[])
+      receptor, message, *args = *node
+      receptor ||= s(:self)
+
+      if message == :==
+        message = {tag: :Equal}
+      elsif message == :!=
+        message = {tag: :NotEqual}
+      else
+        message = {tag: :Reference, contents: message}
+      end
+
+      ms :Send, process(receptor), message, (process_all(args) + extra_args)
+    end
   end
 end

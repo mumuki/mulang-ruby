@@ -104,10 +104,32 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
-    context 'lambdas' do
-      let(:code) { %q{[].map { |x, y| 1 }} }
-      skip { expect(result).to eq ms :MuList,  ms(:MuNumber, 4), ms(:MuNumber, 5) }
+    context 'empty lists' do
+      let(:code) { %q{[]} }
+      it { expect(result).to eq tag: :MuList, contents: [] }
       it { check_valid result }
+    end
+
+    describe 'lambdas' do
+      let(:list) { ms :MuList,  ms(:MuNumber, 4), ms(:MuNumber, 5) }
+      context 'map' do
+        let(:code) { %q{[4, 5].map { |x| x + 1 }} }
+        it { expect(result).to eq simple_send list, :map, [
+                                    ms(:Lambda,
+                                      [ms(:VariablePattern, :x)],
+                                      simple_send(ms(:Reference, :x), :+, [ms(:MuNumber, 1)]))] }
+        it { check_valid result }
+      end
+
+      context 'inject' do
+        let(:code) { %q{[4, 5].inject(0) { |x, y| x + y }} }
+        it { expect(result).to eq simple_send list, :inject, [
+                                    ms(:MuNumber, 0),
+                                    ms(:Lambda,
+                                      [ms(:VariablePattern, :x), ms(:VariablePattern, :y)],
+                                      simple_send(ms(:Reference, :x), :+, [ms(:Reference, :y)]))] }
+        it { check_valid result }
+      end
     end
 
     context 'message sends' do
@@ -355,6 +377,12 @@ describe Mulang::Ruby do
         class << self
         end
       } }
+      it { expect(result).to eq ms :Other }
+      it { check_valid result }
+    end
+
+    context 'hashes' do
+      let(:code) { %q{{foo:3}} }
       it { expect(result).to eq ms :Other }
       it { check_valid result }
     end
