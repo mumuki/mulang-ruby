@@ -10,7 +10,7 @@ module Mulang::Ruby
       _, class_name = *name
       _, superclass_name = *superclass
 
-      ms :Class, class_name, (superclass_name || :Object), process(body)
+      ms :Class, class_name, superclass_name, process(body)
     end
 
     def on_module(node)

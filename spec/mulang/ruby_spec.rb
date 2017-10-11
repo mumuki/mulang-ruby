@@ -324,7 +324,7 @@ describe Mulang::Ruby do
         class Foo
         end
       } }
-      it { expect(result).to eq ms(:Class, :Foo, :Object, ms(:MuNull)) }
+      it { expect(result).to eq ms(:Class, :Foo, nil, ms(:MuNull)) }
       it { check_valid result }
     end
 
@@ -341,7 +341,7 @@ describe Mulang::Ruby do
       let(:code) { %q{
         class Pepita; def canta; end; end
       } }
-      it { expect(result).to eq ms(:Class, :Pepita, :Object, simple_method(:canta, [], ms(:MuNull))) }
+      it { expect(result).to eq ms(:Class, :Pepita, nil, simple_method(:canta, [], ms(:MuNull))) }
       it { check_valid result }
     end
 
@@ -355,7 +355,7 @@ describe Mulang::Ruby do
           end
         end
       } }
-      it { expect(result).to eq ms(:Class, :Pepita, :Object,
+      it { expect(result).to eq ms(:Class, :Pepita, nil,
                                   ms(:Sequence,
                                     simple_method(:canta!, [ms(:VariablePattern, :cancion)], simple_send(ms(:Self), :puts, [ms(:Reference, :cancion)])),
                                     simple_method(:vola!, [ms(:VariablePattern, :distancia)], ms(:MuNull)))) }
@@ -368,7 +368,7 @@ describe Mulang::Ruby do
           include Bar
         end
       } }
-      it { expect(result).to eq ms :Class, :Foo, :Object, simple_send(ms(:Self), :include, [ms(:Reference, :Bar)]) }
+      it { expect(result).to eq ms :Class, :Foo, nil, simple_send(ms(:Self), :include, [ms(:Reference, :Bar)]) }
       it { check_valid result }
     end
 
