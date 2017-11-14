@@ -36,6 +36,23 @@ module Mulang::Ruby
       simple_send ms(:Reference, :Regexp), :new, [process(value)]
     end
 
+    def on_or(node)
+      value, other = *node
+      simple_send process(value), '||', [process(other)]
+    end
+
+    def on_and(node)
+      value, other = *node
+
+      simple_send process(value), '&&', [process(other)]
+    end
+
+    def on_return(node)
+      value = *node
+
+      ms(:Return, process(value.first))
+    end
+
     def on_defs(node)
       _target, id, args, body = *node
       body ||= s(:nil)

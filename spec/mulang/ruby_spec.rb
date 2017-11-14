@@ -57,6 +57,28 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'returns' do
+      let(:code) { %q{return 9} }
+      it { expect(result).to eq ms(:Return, ms(:MuNumber, 9)) }
+      it { check_valid result }
+    end
+
+    context 'or boolean expressions' do
+      let(:code) { %q{true || true} }
+      it { expect(result).to eq simple_send(ms(:MuBool, true), '||', [ms(:MuBool, true)]) }
+      it { check_valid result }
+    end
+
+    context '&& boolean expressions' do
+      let(:code) { %q{true && true} }
+      it { expect(result).to eq simple_send(ms(:MuBool, true), '&&', [ms(:MuBool, true)]) }
+    end
+
+    context '|| boolean expressions' do
+      let(:code) { %q{true or true} }
+      it { expect(result).to eq simple_send(ms(:MuBool, true), '||', [ms(:MuBool, true)]) }
+    end
+
     context 'ints' do
       let(:code) { %q{60} }
       it { expect(result).to eq ms(:MuNumber, 60) }
