@@ -45,6 +45,18 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'instance variables references' do
+      let(:code) { %q{@nigiri} }
+      it { expect(result).to eq ms :Reference, :@nigiri }
+      it { check_valid result }
+    end
+
+    context 'instance variables assignment' do
+      let(:code) { %q{@wasabi = true} }
+      it { expect(result).to eq ms :Assignment, :@wasabi, ms(:MuBool, true) }
+      it { check_valid result }
+    end
+
     context 'ints' do
       let(:code) { %q{60} }
       it { expect(result).to eq ms(:MuNumber, 60) }

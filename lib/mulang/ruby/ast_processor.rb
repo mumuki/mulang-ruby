@@ -111,6 +111,9 @@ module Mulang::Ruby
       ms :Assignment, id, process(value)
     end
 
+    alias on_ivar on_lvar
+    alias on_ivasgn on_lvasgn
+
     def on_const(node)
       _ns, value = *node
       ms :Reference, value
