@@ -75,6 +75,11 @@ module Mulang::Ruby
       ms :MuString, value
     end
 
+    def on_sym(node)
+      value, _ = *node
+      ms :MuSymbol, value.to_s
+    end
+
     def on_float(node)
       value, _ = *node
       ms :MuNumber, value

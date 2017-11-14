@@ -50,6 +50,12 @@ describe Mulang::Ruby do
       it { expect(result).to eq ms(:MuNumber, 60) }
     end
 
+    context 'symbols' do
+      let(:code) { %q{:foo} }
+      it { expect(result).to eq ms(:MuSymbol, 'foo') }
+      it { check_valid result }
+    end
+
     context 'doubles' do
       let(:code) { %q{60.4} }
       it { expect(result).to eq ms(:MuNumber, 60.4) }
