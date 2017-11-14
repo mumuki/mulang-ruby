@@ -30,6 +30,12 @@ module Mulang::Ruby
       ms :Other
     end
 
+    def on_regexp(node)
+      value, _ops = *node
+
+      simple_send ms(:Reference, :Regexp), :new, [process(value)]
+    end
+
     def on_defs(node)
       _target, id, args, body = *node
       body ||= s(:nil)

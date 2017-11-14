@@ -56,6 +56,12 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'regexps' do
+      let(:code) { %q{/foo.*/} }
+      it { expect(result).to eq simple_send(ms(:Reference, :Regexp), :new, [ms(:MuString, 'foo.*')]) }
+      it { check_valid result }
+    end
+
     context 'doubles' do
       let(:code) { %q{60.4} }
       it { expect(result).to eq ms(:MuNumber, 60.4) }
