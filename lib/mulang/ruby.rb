@@ -9,6 +9,10 @@ module Mulang
     def self.parse(ruby_code)
       Mulang::Ruby::AstProcessor.new.process Mulang::Ruby::SexpParser.parser(ruby_code)
     end
+
+    def self.language
+      Mumukit::Language::External.new { |it| parse(it) }
+    end
   end
 end
 
