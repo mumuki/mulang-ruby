@@ -90,6 +90,16 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+   context 'interpolations' do
+      let(:code) { %q{"foo #{@bar} - #{@baz}"} }
+      it { expect(result).to eq simple_send(ms(:MuList,
+                                    ms(:MuString, "foo "),
+                                    ms(:Reference, :@bar),
+                                    ms(:MuString, " - "),
+                                    ms(:Reference, :@baz)), :join, []) }
+      it { check_valid result }
+    end
+
     context 'regexps' do
       let(:code) { %q{/foo.*/} }
       it { expect(result).to eq simple_send(ms(:Reference, :Regexp), :new, [ms(:MuString, 'foo.*')]) }
@@ -237,20 +247,9 @@ describe Mulang::Ruby do
       it { expect(result).to eq tag: :Object,
                                 contents: [
                                   :Pepita,
-                                  simple_method(:vola!, [], {
-                                    tag: :Sequence,
-                                    contents: [
-                                      simple_send(
-                                        ms(:Self),
-                                        :puts,
-                                        [{tag: :MuString, contents: 'vuelo'}]),
-                                      simple_send(
-                                        ms(:Self),
-                                        :puts,
-                                        [{tag: :MuString, contents: 'luego existo'}])
-                                    ]
-                                  })
-                                ] }
+                                  simple_method(:vola!, [], sequence(
+                                      simple_send(ms(:Self), :puts, [{tag: :MuString, contents: 'vuelo'}]),
+                                      simple_send(ms(:Self), :puts, [{tag: :MuString, contents: 'luego existo'}]))) ] }
       it { check_valid result }
     end
 
@@ -402,7 +401,7 @@ describe Mulang::Ruby do
         end
       } }
       it { expect(result).to eq ms(:Class, :Pepita, nil,
-                                  ms(:Sequence,
+                                  sequence(
                                     simple_method(:canta!, [ms(:VariablePattern, :cancion)], simple_send(ms(:Self), :puts, [ms(:Reference, :cancion)])),
                                     simple_method(:vola!, [ms(:VariablePattern, :distancia)], ms(:MuNull)))) }
       it { check_valid result }

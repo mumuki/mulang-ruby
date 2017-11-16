@@ -1,5 +1,15 @@
 module Mulang::Ruby
   module Sexp
+    def sequence(*contents)
+      if contents.empty?
+        ms(:MuNull)
+      elsif contents.size == 1
+        contents[0]
+      else
+        ms(:Sequence, *contents)
+      end
+    end
+
     def ms(tag, *contents)
       if contents.empty?
         {tag: tag}

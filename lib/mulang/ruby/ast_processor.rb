@@ -23,7 +23,7 @@ module Mulang::Ruby
     end
 
     def on_begin(node)
-      {tag: :Sequence, contents: process_all(node)}
+      sequence(*process_all(node))
     end
 
     def on_irange(node)
@@ -34,6 +34,12 @@ module Mulang::Ruby
       value, _ops = *node
 
       simple_send ms(:Reference, :Regexp), :new, [process(value)]
+    end
+
+    def on_dstr(node)
+      parts = *node
+
+      simple_send ms(:MuList, process_all(parts)), :join, []
     end
 
     def on_or(node)
