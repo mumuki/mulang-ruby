@@ -8,10 +8,6 @@ before_install:
 - export PATH=$HOME/.local/bin:$PATH
 # Install bundler
 - gem install bundler -v 1.14.6
-# Install mulang
-- wget https://github.com/mumuki/mulang/releases/download/v3.1.1/mulang
-- mv mulang ~/.local/bin/mulang
-- chmod +x ~/.local/bin/mulang
 deploy:
   provider: rubygems
   api_key:

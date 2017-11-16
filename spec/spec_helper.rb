@@ -1,5 +1,6 @@
-require "bundler/setup"
-require "mulang/ruby"
+require 'bundler/setup'
+require 'mulang/ruby'
+require 'mulang'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -11,15 +12,13 @@ RSpec.configure do |config|
 end
 
 def check_valid(mulang_ast)
-  input = {
+  out = Mulang.analyse(
     sample: { tag: "MulangSample", ast: mulang_ast },
     spec: {
       smellsSet: { tag: "NoSmells" },
       expectations: [],
       signatureAnalysisType: { tag: "NoSignatures" },
-    }
-  }.to_json
-  out = JSON.pretty_parse %x{mulang '#{input}' 2>&1}
+    })
   expect(out['tag']).to eq 'AnalysisCompleted'
 end
 
