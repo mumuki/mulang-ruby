@@ -12,13 +12,7 @@ RSpec.configure do |config|
 end
 
 def check_valid(mulang_ast)
-  out = Mulang.analyse(
-    sample: { tag: "MulangSample", ast: mulang_ast },
-    spec: {
-      smellsSet: { tag: "NoSmells" },
-      expectations: [],
-      signatureAnalysisType: { tag: "NoSignatures" },
-    })
+  out = Mulang::Code.new(Mulang::Language::External.new, mulang_ast).analyse smellsSet: { tag: "NoSmells" }, expectations: []
   expect(out['tag']).to eq 'AnalysisCompleted'
 end
 
