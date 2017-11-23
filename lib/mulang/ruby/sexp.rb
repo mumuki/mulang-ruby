@@ -21,11 +21,32 @@ module Mulang::Ruby
     end
 
     def simple_method(name, args, body)
-    { tag: :Method,
-      contents: [
-        name, [
-          [ args, {tag: :UnguardedBody, contents: body }]]
-        ]}
+      {
+        tag: :Method,
+        contents: [
+          name, 
+          [
+            [ args, {tag: :UnguardedBody, contents: body }]
+          ]
+        ]
+      }
+    end
+
+    def method(tag, args, body)
+      {
+        tag: tag,
+        contents: [
+          [ args, {tag: :UnguardedBody, contents: body }]
+        ]
+      }
+    end
+
+    def equal_method(args, body)
+      method(:EqualMethod, args, body)
+    end
+
+    def hash_method(args, body)
+      method(:HashMethod, args, body)
     end
 
     def simple_send(sender, message, args)
