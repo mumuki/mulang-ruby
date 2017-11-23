@@ -41,14 +41,6 @@ module Mulang::Ruby
       }
     end
 
-    def equal_method(args, body)
-      method(:EqualMethod, args, body)
-    end
-
-    def hash_method(args, body)
-      method(:HashMethod, args, body)
-    end
-
     def simple_send(sender, message, args)
       ms(:Send, sender, {tag: :Reference, contents: message}, args)
     end

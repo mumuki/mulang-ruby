@@ -71,10 +71,10 @@ module Mulang::Ruby
       body ||= s(:nil)
 
       case id
-      when :equal
-        equal_method process_all(args), process(body)
+      when :equal?, :eql?, :==
+        method :EqualMethod, process_all(args), process(body)
       when :hash
-        hash_method process_all(args), process(body)
+        method :HashMethod, process_all(args), process(body)
       else
         simple_method id, process_all(args), process(body)
       end
@@ -181,5 +181,6 @@ module Mulang::Ruby
 
       ms :Send, process(receptor), message, (process_all(args) + extra_args)
     end
+
   end
 end
