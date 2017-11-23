@@ -449,6 +449,26 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'hash def' do
+      let(:code) { %q{def hash;end} }
+      it { expect(result).to eq method :HashMethod, [], ms(:MuNull) }
+    end
+
+    context 'equal? def' do
+      let(:code) { %q{def equal?;end} }
+      it { expect(result).to eq method :EqualMethod, [], ms(:MuNull) }
+    end
+
+    context 'eql? def' do
+      let(:code) { %q{def equal?;end} }
+      it { expect(result).to eq method :EqualMethod, [], ms(:MuNull) }
+    end
+
+    context '== def' do
+      let(:code) { %q{def equal?;end} }
+      it { expect(result).to eq method :EqualMethod, [], ms(:MuNull) }
+    end
+
   end
 end
 

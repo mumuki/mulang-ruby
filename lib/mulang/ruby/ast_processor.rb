@@ -70,7 +70,14 @@ module Mulang::Ruby
       id, args, body = *node
       body ||= s(:nil)
 
-      simple_method id, process_all(args), process(body)
+      case id
+      when :equal?, :eql?, :==
+        method :EqualMethod, process_all(args), process(body)
+      when :hash
+        method :HashMethod, process_all(args), process(body)
+      else
+        simple_method id, process_all(args), process(body)
+      end
     end
 
     def on_block(node)
@@ -174,5 +181,6 @@ module Mulang::Ruby
 
       ms :Send, process(receptor), message, (process_all(args) + extra_args)
     end
+
   end
 end
