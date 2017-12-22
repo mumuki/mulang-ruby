@@ -469,6 +469,332 @@ describe Mulang::Ruby do
       it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNull) }
     end
 
+    context 'rescue with no action' do
+      let(:code) { %q{
+        def foo
+          bar
+        rescue
+        end
+      } }
+      it { expect(result).
+        to(
+          eq(
+            simple_method(
+              :foo,
+              [],
+              ms(
+                :Try,
+                simple_send(
+                  ms(:Self),
+                  :bar,
+                  []
+                ),
+                [
+                  [
+                    ms(
+                      :WildcardPattern
+                    ),
+                    ms(
+                      :MuNull
+                    )
+                  ]
+                ],
+                ms(:MuNull)
+              )
+            )
+          )
+        )
+      }
+    end
+
+    context 'rescue with action' do
+      let(:code) { %q{
+        def foo
+          bar
+        rescue
+          baz
+        end
+      } }
+      it { expect(result).
+        to(
+          eq(
+            simple_method(
+              :foo,
+              [],
+              ms(
+                :Try,
+                simple_send(
+                  ms(:Self),
+                  :bar,
+                  []
+                ),
+                [
+                  [
+                    ms(
+                      :WildcardPattern
+                    ),
+                    simple_send(
+                      ms(:Self),
+                      :baz,
+                      []
+                    )
+                  ]
+                ],
+                ms(:MuNull)
+              )
+            )
+          )
+        )
+      }
+    end
+
+    context 'rescue with exception type' do
+      let(:code) { %q{
+        def foo
+          bar
+        rescue RuntimeError
+          baz
+        end
+      } }
+      it { expect(result).
+        to(
+          eq(
+            simple_method(
+              :foo,
+              [],
+              ms(
+                :Try,
+                simple_send(
+                  ms(:Self),
+                  :bar,
+                  []
+                ),
+                [
+                  [
+                    ms(
+                      :TypePattern,
+                      :RuntimeError
+                    ),
+                    simple_send(
+                      ms(:Self),
+                      :baz,
+                      []
+                    )
+                  ]
+                ],
+                ms(:MuNull)
+              )
+            )
+          )
+        )
+      }
+    end
+
+    context 'rescue with multiple exception types' do
+      let(:code) { %q{
+        def foo
+          bar
+        rescue RuntimeError, TypeError
+          baz
+        end
+      } }
+      it { expect(result).
+        to(
+          eq(
+            simple_method(
+              :foo,
+              [],
+              ms(
+                :Try,
+                simple_send(
+                  ms(:Self),
+                  :bar,
+                  []
+                ),
+                [
+                  [
+                    ms(
+                      :UnionPattern,
+                      [
+                        ms(
+                          :TypePattern,
+                          :RuntimeError
+                        ),
+                        ms(
+                          :TypePattern,
+                          :TypeError
+                        )
+                      ]
+                    ),
+                    simple_send(
+                      ms(:Self),
+                      :baz,
+                      []
+                    )
+                  ]
+                ],
+                ms(:MuNull)
+              )
+            )
+          )
+        )
+      }
+    end
+
+    context 'rescue with exception variable' do
+      let(:code) { %q{
+        def foo
+          bar
+        rescue => e
+          baz
+        end
+      } }
+      it { expect(result).
+        to(
+          eq(
+            simple_method(
+              :foo,
+              [],
+              ms(
+                :Try,
+                simple_send(
+                  ms(:Self),
+                  :bar,
+                  []
+                ),
+                [
+                  [
+                    ms(
+                      :AsPattern,
+                      :e,
+                      ms(
+                        :WildcardPattern
+                      )
+                    ),
+                    simple_send(
+                      ms(:Self),
+                      :baz,
+                      []
+                    )
+                  ]
+                ],
+                ms(:MuNull)
+              )
+            )
+          )
+        )
+      }
+    end
+
+    context 'rescue exception with both type and variable' do
+      let(:code) { %q{
+        def foo
+          bar
+        rescue RuntimeError => e
+          baz
+        end
+      } }
+      it { expect(result).
+        to(
+          eq(
+            simple_method(
+              :foo,
+              [],
+              ms(
+                :Try,
+                simple_send(
+                  ms(:Self),
+                  :bar,
+                  []
+                ),
+                [
+                  [
+                    ms(
+                      :AsPattern,
+                      :e,
+                      ms(
+                        :TypePattern,
+                        :RuntimeError
+                      )
+                    ),
+                    simple_send(
+                      ms(:Self),
+                      :baz,
+                      []
+                    )
+                  ]
+                ],
+                ms(:MuNull)
+              )
+            )
+          )
+        )
+      }
+    end
+
+    context 'rescue exception with multiple catches' do
+      let(:code) { %q{
+        def foo
+          bar
+        rescue RuntimeError => e
+          baz
+        rescue RangeError => e
+          foobar
+        end
+      } }
+      it { expect(result).
+        to(
+          eq(
+            simple_method(
+              :foo,
+              [],
+              ms(
+                :Try,
+                simple_send(
+                  ms(:Self),
+                  :bar,
+                  []
+                ),
+                [
+                  [
+                    ms(
+                      :AsPattern,
+                      :e,
+                      ms(
+                        :TypePattern,
+                        :RuntimeError
+                      )
+                    ),
+                    simple_send(
+                      ms(:Self),
+                      :baz,
+                      []
+                    )
+                  ],
+                  [
+                    ms(
+                      :AsPattern,
+                      :e,
+                      ms(
+                        :TypePattern,
+                        :RangeError
+                      )
+                    ),
+                    simple_send(
+                      ms(:Self),
+                      :foobar,
+                      []
+                    )
+                  ]
+                ],
+                ms(:MuNull)
+              )
+            )
+          )
+        )
+      }
+    end
+
   end
 end
 

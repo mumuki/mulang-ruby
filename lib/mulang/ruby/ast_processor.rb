@@ -26,6 +26,31 @@ module Mulang::Ruby
       sequence(*process_all(node))
     end
 
+    def on_rescue(node)
+      try, *catch, _ = *node
+      ms :Try, process(try), process_all(catch), ms(:MuNull)
+    end
+
+    def on_resbody(node)
+      patterns, variable, block = *node
+
+      if patterns.nil?
+        mu_pattern = ms(:WildcardPattern)
+      else
+        mu_patterns = patterns.to_a.map{|it| to_mulang_pattern it}
+        mu_pattern = mu_patterns.size == 1 ? mu_patterns.first : ms(:UnionPattern, mu_patterns)
+      end
+
+      mu_pattern = variable.try{|it| (ms :AsPattern, it.to_a.first, mu_pattern)} || mu_pattern
+
+      [mu_pattern, process(block) || ms(:MuNull)]
+    end
+
+    def to_mulang_pattern(node)
+      _, b = *node
+      ms :TypePattern, b
+    end
+
     def on_irange(node)
       ms :Other
     end
