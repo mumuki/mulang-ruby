@@ -72,9 +72,9 @@ module Mulang::Ruby
 
       case id
       when :equal?, :eql?, :==
-        method :EqualMethod, process_all(args), process(body)
+        mu_method :EqualMethod, process_all(args), process(body)
       when :hash
-        method :HashMethod, process_all(args), process(body)
+        mu_method :HashMethod, process_all(args), process(body)
       else
         simple_method id, process_all(args), process(body)
       end

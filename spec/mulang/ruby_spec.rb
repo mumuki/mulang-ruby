@@ -451,22 +451,22 @@ describe Mulang::Ruby do
 
     context 'hash def' do
       let(:code) { %q{def hash;end} }
-      it { expect(result).to eq method :HashMethod, [], ms(:MuNull) }
+      it { expect(result).to eq mu_method :HashMethod, [], ms(:MuNull) }
     end
 
     context 'equal? def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq method :EqualMethod, [], ms(:MuNull) }
+      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNull) }
     end
 
     context 'eql? def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq method :EqualMethod, [], ms(:MuNull) }
+      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNull) }
     end
 
     context '== def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq method :EqualMethod, [], ms(:MuNull) }
+      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNull) }
     end
 
   end
