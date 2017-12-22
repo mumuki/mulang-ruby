@@ -34,21 +34,34 @@ module Mulang::Ruby
     def on_resbody(node)
       patterns, variable, block = *node
 
-      if patterns.nil?
-        mu_pattern = ms(:WildcardPattern)
-      else
-        mu_patterns = patterns.to_a.map{|it| to_mulang_pattern it}
-        mu_pattern = mu_patterns.size == 1 ? mu_patterns.first : ms(:UnionPattern, mu_patterns)
-      end
-
-      mu_pattern = variable.try{|it| (ms :AsPattern, it.to_a.first, mu_pattern)} || mu_pattern
-
-      [mu_pattern, process(block) || ms(:MuNull)]
+      [to_mulang_pattern(patterns, variable), process(block) || ms(:MuNull)]
     end
 
-    def to_mulang_pattern(node)
-      _, b = *node
-      ms :TypePattern, b
+    def _
+      Object.new.tap { |it| it.define_singleton_method(:==) { |_| true} }
+    end
+
+    def to_mulang_pattern(patterns, variable)
+      case [patterns, variable]
+        when [nil, nil]
+          ms :WildcardPattern
+        when [nil, _]
+          ms :VariablePattern, variable.to_a.first
+        when [_, nil]
+          to_single_pattern patterns
+        else
+          ms(:AsPattern, variable.to_a.first, to_single_pattern(patterns))
+      end
+    end
+
+    def to_single_pattern(patterns)
+      mu_patterns = patterns.to_a.map { |it| to_type_pattern it }
+      mu_patterns.size == 1 ? mu_patterns.first : ms(:UnionPattern, mu_patterns)
+    end
+
+    def to_type_pattern(node)
+      _, type = *node
+      ms :TypePattern, type
     end
 
     def on_kwbegin(node)

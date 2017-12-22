@@ -665,11 +665,8 @@ describe Mulang::Ruby do
                 [
                   [
                     ms(
-                      :AsPattern,
+                      :VariablePattern,
                       :e,
-                      ms(
-                        :WildcardPattern
-                      )
                     ),
                     simple_send(
                       ms(:Self),
