@@ -51,6 +51,10 @@ module Mulang::Ruby
       ms :TypePattern, b
     end
 
+    def on_kwbegin(node)
+      process node.to_a.first
+    end
+
     def on_irange(node)
       ms :Other
     end

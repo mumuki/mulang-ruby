@@ -795,6 +795,49 @@ describe Mulang::Ruby do
       }
     end
 
+    context 'rescue with begin keyword' do
+      let(:code) { %q{
+        def foo
+          begin
+            bar
+          rescue
+            baz
+          end
+        end
+      } }
+      it { expect(result).
+        to(
+          eq(
+            simple_method(
+              :foo,
+              [],
+              ms(
+                :Try,
+                simple_send(
+                  ms(:Self),
+                  :bar,
+                  []
+                ),
+                [
+                  [
+                    ms(
+                      :WildcardPattern
+                    ),
+                    simple_send(
+                      ms(:Self),
+                      :baz,
+                      []
+                    )
+                  ]
+                ],
+                ms(:MuNull)
+              )
+            )
+          )
+        )
+      }
+    end
+
   end
 end
 
