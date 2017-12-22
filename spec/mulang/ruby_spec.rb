@@ -838,6 +838,53 @@ describe Mulang::Ruby do
       }
     end
 
+    context 'rescue with ensure' do
+      let(:code) { %q{
+        def foo
+          bar
+        rescue
+          baz
+        ensure
+          foobar
+        end
+      } }
+      it { expect(result).
+        to(
+          eq(
+            simple_method(
+              :foo,
+              [],
+              ms(
+                :Try,
+                simple_send(
+                  ms(:Self),
+                  :bar,
+                  []
+                ),
+                [
+                  [
+                    ms(
+                      :WildcardPattern
+                    ),
+                    simple_send(
+                      ms(:Self),
+                      :baz,
+                      []
+                    )
+                  ]
+                ],
+                simple_send(
+                  ms(:Self),
+                  :foobar,
+                  []
+                )
+              )
+            )
+          )
+        )
+      }
+    end
+
   end
 end
 

@@ -55,6 +55,12 @@ module Mulang::Ruby
       process node.to_a.first
     end
 
+    def on_ensure(node)
+      catch, finally = *node
+      try, catches = on_rescue(catch)[:contents]
+      ms :Try, try, catches, process(finally)
+    end
+
     def on_irange(node)
       ms :Other
     end
