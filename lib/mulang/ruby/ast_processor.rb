@@ -38,7 +38,7 @@ module Mulang::Ruby
     end
 
     def _
-      Object.new.tap { |it| it.define_singleton_method(:==) { |_| true} }
+      Object.new.tap { |it| it.define_singleton_method(:==) { |_| true } }
     end
 
     def to_mulang_pattern(patterns, variable)

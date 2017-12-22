@@ -469,6 +469,15 @@ describe Mulang::Ruby do
       it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNull) }
     end
 
+    def try(catches, finally)
+      simple_method(:foo, [],
+        ms(:Try,
+          simple_send(
+            ms(:Self),
+            :bar,
+            []), catches, finally))
+    end
+
     context 'rescue with no action' do
       let(:code) { %q{
         def foo
@@ -476,35 +485,9 @@ describe Mulang::Ruby do
         rescue
         end
       } }
-      it { expect(result).
-        to(
-          eq(
-            simple_method(
-              :foo,
-              [],
-              ms(
-                :Try,
-                simple_send(
-                  ms(:Self),
-                  :bar,
-                  []
-                ),
-                [
-                  [
-                    ms(
-                      :WildcardPattern
-                    ),
-                    ms(
-                      :MuNull
-                    )
-                  ]
-                ],
-                ms(:MuNull)
-              )
-            )
-          )
-        )
-      }
+      it { expect(result).to eq try([ [ ms(:WildcardPattern),
+                                        ms(:MuNull)] ],
+                                    ms(:MuNull)) }
     end
 
     context 'rescue with action' do
@@ -515,37 +498,9 @@ describe Mulang::Ruby do
           baz
         end
       } }
-      it { expect(result).
-        to(
-          eq(
-            simple_method(
-              :foo,
-              [],
-              ms(
-                :Try,
-                simple_send(
-                  ms(:Self),
-                  :bar,
-                  []
-                ),
-                [
-                  [
-                    ms(
-                      :WildcardPattern
-                    ),
-                    simple_send(
-                      ms(:Self),
-                      :baz,
-                      []
-                    )
-                  ]
-                ],
-                ms(:MuNull)
-              )
-            )
-          )
-        )
-      }
+      it { expect(result).to eq try([ [ ms(:WildcardPattern),
+                                        simple_send(ms(:Self), :baz, []) ] ],
+                                    ms(:MuNull)) }
     end
 
     context 'rescue with exception type' do
@@ -556,38 +511,9 @@ describe Mulang::Ruby do
           baz
         end
       } }
-      it { expect(result).
-        to(
-          eq(
-            simple_method(
-              :foo,
-              [],
-              ms(
-                :Try,
-                simple_send(
-                  ms(:Self),
-                  :bar,
-                  []
-                ),
-                [
-                  [
-                    ms(
-                      :TypePattern,
-                      :RuntimeError
-                    ),
-                    simple_send(
-                      ms(:Self),
-                      :baz,
-                      []
-                    )
-                  ]
-                ],
-                ms(:MuNull)
-              )
-            )
-          )
-        )
-      }
+      it { expect(result).to eq try([ [ ms(:TypePattern, :RuntimeError),
+                                        simple_send(ms(:Self), :baz, []) ] ],
+                                    ms(:MuNull) ) }
     end
 
     context 'rescue with multiple exception types' do
@@ -598,47 +524,11 @@ describe Mulang::Ruby do
           baz
         end
       } }
-      it { expect(result).
-        to(
-          eq(
-            simple_method(
-              :foo,
-              [],
-              ms(
-                :Try,
-                simple_send(
-                  ms(:Self),
-                  :bar,
-                  []
-                ),
-                [
-                  [
-                    ms(
-                      :UnionPattern,
-                      [
-                        ms(
-                          :TypePattern,
-                          :RuntimeError
-                        ),
-                        ms(
-                          :TypePattern,
-                          :TypeError
-                        )
-                      ]
-                    ),
-                    simple_send(
-                      ms(:Self),
-                      :baz,
-                      []
-                    )
-                  ]
-                ],
-                ms(:MuNull)
-              )
-            )
-          )
-        )
-      }
+      it { expect(result).to eq try([ [ ms(:UnionPattern, [
+                                          ms(:TypePattern, :RuntimeError),
+                                          ms(:TypePattern, :TypeError) ]),
+                                        simple_send(ms(:Self), :baz, []) ] ],
+                                    ms(:MuNull)) }
     end
 
     context 'rescue with exception variable' do
@@ -649,38 +539,9 @@ describe Mulang::Ruby do
           baz
         end
       } }
-      it { expect(result).
-        to(
-          eq(
-            simple_method(
-              :foo,
-              [],
-              ms(
-                :Try,
-                simple_send(
-                  ms(:Self),
-                  :bar,
-                  []
-                ),
-                [
-                  [
-                    ms(
-                      :VariablePattern,
-                      :e,
-                    ),
-                    simple_send(
-                      ms(:Self),
-                      :baz,
-                      []
-                    )
-                  ]
-                ],
-                ms(:MuNull)
-              )
-            )
-          )
-        )
-      }
+      it { expect(result).to eq try([ [ ms(:VariablePattern, :e),
+                                        simple_send(ms(:Self), :baz, []) ] ],
+                                    ms(:MuNull)) }
     end
 
     context 'rescue exception with both type and variable' do
@@ -691,42 +552,9 @@ describe Mulang::Ruby do
           baz
         end
       } }
-      it { expect(result).
-        to(
-          eq(
-            simple_method(
-              :foo,
-              [],
-              ms(
-                :Try,
-                simple_send(
-                  ms(:Self),
-                  :bar,
-                  []
-                ),
-                [
-                  [
-                    ms(
-                      :AsPattern,
-                      :e,
-                      ms(
-                        :TypePattern,
-                        :RuntimeError
-                      )
-                    ),
-                    simple_send(
-                      ms(:Self),
-                      :baz,
-                      []
-                    )
-                  ]
-                ],
-                ms(:MuNull)
-              )
-            )
-          )
-        )
-      }
+      it { expect(result).to eq try([ [ ms(:AsPattern, :e, ms(:TypePattern, :RuntimeError)),
+                                        simple_send(ms(:Self), :baz, []) ] ],
+                                    ms(:MuNull)) }
     end
 
     context 'rescue exception with multiple catches' do
@@ -739,57 +567,11 @@ describe Mulang::Ruby do
           foobar
         end
       } }
-      it { expect(result).
-        to(
-          eq(
-            simple_method(
-              :foo,
-              [],
-              ms(
-                :Try,
-                simple_send(
-                  ms(:Self),
-                  :bar,
-                  []
-                ),
-                [
-                  [
-                    ms(
-                      :AsPattern,
-                      :e,
-                      ms(
-                        :TypePattern,
-                        :RuntimeError
-                      )
-                    ),
-                    simple_send(
-                      ms(:Self),
-                      :baz,
-                      []
-                    )
-                  ],
-                  [
-                    ms(
-                      :AsPattern,
-                      :e,
-                      ms(
-                        :TypePattern,
-                        :RangeError
-                      )
-                    ),
-                    simple_send(
-                      ms(:Self),
-                      :foobar,
-                      []
-                    )
-                  ]
-                ],
-                ms(:MuNull)
-              )
-            )
-          )
-        )
-      }
+      it { expect(result).to eq try([ [ ms(:AsPattern, :e, ms(:TypePattern, :RuntimeError)),
+                                        simple_send(ms(:Self), :baz, []) ],
+                                      [ ms(:AsPattern, :e, ms(:TypePattern, :RangeError)),
+                                        simple_send(ms(:Self), :foobar, []) ] ],
+                                    ms(:MuNull)) }
     end
 
     context 'rescue with begin keyword' do
@@ -802,37 +584,9 @@ describe Mulang::Ruby do
           end
         end
       } }
-      it { expect(result).
-        to(
-          eq(
-            simple_method(
-              :foo,
-              [],
-              ms(
-                :Try,
-                simple_send(
-                  ms(:Self),
-                  :bar,
-                  []
-                ),
-                [
-                  [
-                    ms(
-                      :WildcardPattern
-                    ),
-                    simple_send(
-                      ms(:Self),
-                      :baz,
-                      []
-                    )
-                  ]
-                ],
-                ms(:MuNull)
-              )
-            )
-          )
-        )
-      }
+      it { expect(result).to eq try([ [ ms(:WildcardPattern),
+                                        simple_send(ms(:Self), :baz, []) ] ],
+                                    ms(:MuNull)) }
     end
 
     context 'rescue with ensure' do
@@ -845,41 +599,9 @@ describe Mulang::Ruby do
           foobar
         end
       } }
-      it { expect(result).
-        to(
-          eq(
-            simple_method(
-              :foo,
-              [],
-              ms(
-                :Try,
-                simple_send(
-                  ms(:Self),
-                  :bar,
-                  []
-                ),
-                [
-                  [
-                    ms(
-                      :WildcardPattern
-                    ),
-                    simple_send(
-                      ms(:Self),
-                      :baz,
-                      []
-                    )
-                  ]
-                ],
-                simple_send(
-                  ms(:Self),
-                  :foobar,
-                  []
-                )
-              )
-            )
-          )
-        )
-      }
+      it { expect(result).to eq try([ [ ms(:WildcardPattern),
+                                        simple_send(ms(:Self), :baz, []) ] ],
+                                    simple_send(ms(:Self), :foobar, [])) }
     end
 
   end
