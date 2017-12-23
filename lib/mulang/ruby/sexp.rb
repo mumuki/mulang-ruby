@@ -32,7 +32,7 @@ module Mulang::Ruby
       }
     end
 
-    def method(tag, args, body)
+    def mu_method(tag, args, body)
       {
         tag: tag,
         contents: [
