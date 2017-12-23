@@ -528,6 +528,8 @@ describe Mulang::Ruby do
           baz
         end
       } }
+
+      it { check_valid result }
       it { expect(result).to eq try([ [ ms(:UnionPattern, [
                                           ms(:TypePattern, :RuntimeError),
                                           ms(:TypePattern, :TypeError) ]),
