@@ -620,6 +620,48 @@ describe Mulang::Ruby do
                                     simple_send(ms(:Self), :foobar, [])) }
     end
 
+    context 'op assignment -' do
+      let(:code) { 'a -= 3' }
+
+      it { check_valid result }
+      it { expect(result).to eq(Mulang::Ruby.parse 'a = a - 3')}
+    end
+
+    context 'op assignment on local array var' do
+      let(:code) { 'a[1] += 3' }
+
+      it { check_valid result }
+      it { expect(result).to eq(Mulang::Ruby.parse('a[1] = a[1] + 3'))}
+    end
+
+    context 'op assignment on instance array var' do
+      let(:code) { '@a[1] *= 3' }
+
+      it { check_valid result }
+      it { expect(result).to eq(Mulang::Ruby.parse('@a[1] = @a[1] * 3'))}
+    end
+
+    context 'op assignment on local var with attribute accessor' do
+      let(:code) { 'a.b /= 3' }
+
+      it { check_valid result }
+      it { expect(result).to eq(Mulang::Ruby.parse('a.b = a.b / 3'))}
+    end
+
+    context 'op assignment on instance var with attribute accessor' do
+      let(:code) { '@a.b ||= false' }
+
+      it { check_valid result }
+      it { expect(result).to eq(Mulang::Ruby.parse('@a.b = @a.b || false'))}
+    end
+
+    context 'and assignment' do
+      let(:code) { 'a &&= false' }
+
+      it { check_valid result }
+      it { expect(result).to eq(Mulang::Ruby.parse('a = a && false'))}
+    end
+
   end
 end
 
