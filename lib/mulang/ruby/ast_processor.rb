@@ -205,9 +205,18 @@ module Mulang::Ruby
     end
 
     def property_assignment(assignee, message, value)
-      receiver, messsage, args = *assignee
-      id = process(receiver)
-      simple_send id, "#{messsage}=".to_sym, [process(args), simple_send(simple_send(id, messsage, [process(args)].compact), message, [process(value)])].compact
+      receiver, accessor, *accessor_args = *assignee
+
+      reasign accessor, process_all(accessor_args), process(receiver), message, process(value)
+    end
+
+    def reasign(accessor, args, id, message, value)
+      simple_send id,
+                  "#{accessor}=".to_sym,
+                  args + [simple_send(
+                            simple_send(id, accessor, args),
+                            message,
+                            [value])]
     end
 
     def on_or_asgn(node)
