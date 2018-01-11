@@ -189,6 +189,46 @@ module Mulang::Ruby
       ms :Assignment, id, process(value)
     end
 
+    def on_op_asgn(node)
+      assignee, message, value = *node
+
+      if assignee.type == :send
+        property_assignment assignee, message, value
+      else
+        var_assignment assignee, message, value
+      end
+    end
+
+    def var_assignment(assignee, message, value)
+      id = assignee.to_a.first
+      ms :Assignment, id, simple_send(ms(:Reference, id), message, [process(value)])
+    end
+
+    def property_assignment(assignee, message, value)
+      receiver, accessor, *accessor_args = *assignee
+
+      reasign accessor, process_all(accessor_args), process(receiver), message, process(value)
+    end
+
+    def reasign(accessor, args, id, message, value)
+      simple_send id,
+                  "#{accessor}=".to_sym,
+                  args + [simple_send(
+                            simple_send(id, accessor, args),
+                            message,
+                            [value])]
+    end
+
+    def on_or_asgn(node)
+      assignee, value = *node
+      on_op_asgn s :op_asgn, assignee, '||', value
+    end
+
+    def on_and_asgn(node)
+      assignee, value = *node
+      on_op_asgn s :op_asgn, assignee, '&&', value
+    end
+
     alias on_ivar on_lvar
     alias on_ivasgn on_lvasgn
 
