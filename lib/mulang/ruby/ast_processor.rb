@@ -189,6 +189,11 @@ module Mulang::Ruby
       ms :Assignment, id, process(value)
     end
 
+    def on_casgn(node)
+      _ns, id, value = *node
+      ms :Assignment, id, process(value)
+    end
+
     def on_op_asgn(node)
       assignee, message, value = *node
 

@@ -279,6 +279,14 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'constant assignment' do
+      let(:code) { %q{Pepita = Object.new} }
+      it { expect(result).to eq ms(:Assignment, :Pepita, simple_send(ms(:Reference, :Object), :new, [])) }
+      it { check_valid result }
+    end
+
+
+
     context 'module with if-else' do
       let(:code) { %q{
         module Pepita
