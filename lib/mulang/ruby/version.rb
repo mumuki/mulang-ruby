@@ -1,5 +1,5 @@
 module Mulang
   module Ruby
-    VERSION = "1.3.2"
+    VERSION = "4.0.0"
   end
 end
