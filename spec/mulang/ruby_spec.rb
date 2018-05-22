@@ -29,7 +29,7 @@ describe Mulang::Ruby do
         module Pepita
         end
       } }
-      it { expect(result).to eq ms :Object, :Pepita, ms(:MuNull) }
+      it { expect(result).to eq ms :Object, :Pepita, ms(:MuNil) }
       it { check_valid result }
     end
 
@@ -159,7 +159,7 @@ describe Mulang::Ruby do
 
      context 'nil' do
       let(:code) { %q{nil} }
-      it { expect(result).to eq ms :MuNull }
+      it { expect(result).to eq ms :MuNil }
       it { check_valid result }
     end
 
@@ -226,7 +226,7 @@ describe Mulang::Ruby do
           end
         end
       } }
-      it { expect(result).to eq ms(:Object, :Pepita, simple_method(:canta, [], ms(:MuNull))) }
+      it { expect(result).to eq ms(:Object, :Pepita, simple_method(:canta, [], ms(:MuNil))) }
       it { check_valid result }
     end
 
@@ -275,7 +275,7 @@ describe Mulang::Ruby do
                         simple_method(
                           :come!,
                           [ms(:VariablePattern, :cantidad), ms(:VariablePattern, :unidad)],
-                          ms(:MuNull))) }
+                          ms(:MuNil))) }
       it { check_valid result }
     end
 
@@ -340,7 +340,7 @@ describe Mulang::Ruby do
                                     ms(:If,
                                       simple_send(ms(:Self), :esta_bien?, []),
                                       simple_send(ms(:Self), :hacelo!, []),
-                                      ms(:MuNull)))) }
+                                      ms(:MuNil)))) }
       it { check_valid result }
     end
 
@@ -359,7 +359,7 @@ describe Mulang::Ruby do
                                   simple_method(:decidi!, [],
                                     ms(:If,
                                       simple_send(ms(:Self), :esta_bien?, []),
-                                      ms(:MuNull),
+                                      ms(:MuNil),
                                       simple_send(ms(:Self),:hacelo!, [])))) }
       it { check_valid result }
     end
@@ -377,7 +377,7 @@ describe Mulang::Ruby do
                                   simple_method(:decidi!, [],
                                     ms(:If,
                                       simple_send(ms(:Self), :esta_bien?, []),
-                                      ms(:MuNull),
+                                      ms(:MuNil),
                                       simple_send(ms(:Self), :hacelo!, [])))) }
     end
 
@@ -386,7 +386,7 @@ describe Mulang::Ruby do
         class Foo
         end
       } }
-      it { expect(result).to eq ms(:Class, :Foo, nil, ms(:MuNull)) }
+      it { expect(result).to eq ms(:Class, :Foo, nil, ms(:MuNil)) }
       it { check_valid result }
     end
 
@@ -395,7 +395,7 @@ describe Mulang::Ruby do
         class Foo < Bar
         end
       } }
-      it { expect(result).to eq ms(:Class, :Foo, :Bar, ms(:MuNull)) }
+      it { expect(result).to eq ms(:Class, :Foo, :Bar, ms(:MuNil)) }
       it { check_valid result }
     end
 
@@ -403,7 +403,7 @@ describe Mulang::Ruby do
       let(:code) { %q{
         class Pepita; def canta; end; end
       } }
-      it { expect(result).to eq ms(:Class, :Pepita, nil, simple_method(:canta, [], ms(:MuNull))) }
+      it { expect(result).to eq ms(:Class, :Pepita, nil, simple_method(:canta, [], ms(:MuNil))) }
       it { check_valid result }
     end
 
@@ -420,7 +420,7 @@ describe Mulang::Ruby do
       it { expect(result).to eq ms(:Class, :Pepita, nil,
                                   sequence(
                                     simple_method(:canta!, [ms(:VariablePattern, :cancion)], simple_send(ms(:Self), :puts, [ms(:Reference, :cancion)])),
-                                    simple_method(:vola!, [ms(:VariablePattern, :distancia)], ms(:MuNull)))) }
+                                    simple_method(:vola!, [ms(:VariablePattern, :distancia)], ms(:MuNil)))) }
       it { check_valid result }
     end
 
@@ -439,13 +439,13 @@ describe Mulang::Ruby do
         class << self
         end
       } }
-      it { expect(result).to eq ms :Other }
+      it { expect(result).to eq ms :Other, "[s(:sclass,\n  s(:self), nil)]", nil }
       it { check_valid result }
     end
 
     context 'hashes' do
       let(:code) { %q{{foo:3}} }
-      it { expect(result).to eq ms :Other }
+      it { expect(result).to eq ms :Other, "[s(:hash,\n  s(:pair,\n    s(:sym, :foo),\n    s(:int, 3)))]", nil }
       it { check_valid result }
     end
 
@@ -457,7 +457,7 @@ describe Mulang::Ruby do
 
     context 'ranges' do
       let(:code) { %q{1..1024} }
-      it { expect(result).to eq ms :Other }
+      it { expect(result).to eq ms :Other, "(irange\n  (int 1)\n  (int 1024))", nil }
       it { check_valid result }
     end
 
@@ -468,22 +468,22 @@ describe Mulang::Ruby do
 
     context 'hash def' do
       let(:code) { %q{def hash;end} }
-      it { expect(result).to eq mu_method :HashMethod, [], ms(:MuNull) }
+      it { expect(result).to eq mu_method :HashMethod, [], ms(:MuNil) }
     end
 
     context 'equal? def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNull) }
+      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNil) }
     end
 
     context 'eql? def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNull) }
+      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNil) }
     end
 
     context '== def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNull) }
+      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNil) }
     end
 
     context 'rescue with no action' do
@@ -495,8 +495,8 @@ describe Mulang::Ruby do
       } }
       it { check_valid result }
       it { expect(result).to eq try([ [ ms(:WildcardPattern),
-                                        ms(:MuNull)] ],
-                                    ms(:MuNull)) }
+                                        ms(:MuNil)] ],
+                                    ms(:MuNil)) }
     end
 
     context 'rescue with action' do
@@ -510,7 +510,7 @@ describe Mulang::Ruby do
       it { check_valid result }
       it { expect(result).to eq try([ [ ms(:WildcardPattern),
                                         simple_send(ms(:Self), :baz, []) ] ],
-                                    ms(:MuNull)) }
+                                    ms(:MuNil)) }
     end
 
     context 'rescue with exception type' do
@@ -525,7 +525,7 @@ describe Mulang::Ruby do
       it { check_valid result }
       it { expect(result).to eq try([ [ ms(:TypePattern, :RuntimeError),
                                         simple_send(ms(:Self), :baz, []) ] ],
-                                    ms(:MuNull) ) }
+                                    ms(:MuNil) ) }
     end
 
     context 'rescue with multiple exception types' do
@@ -542,7 +542,7 @@ describe Mulang::Ruby do
                                           ms(:TypePattern, :RuntimeError),
                                           ms(:TypePattern, :TypeError) ]),
                                         simple_send(ms(:Self), :baz, []) ] ],
-                                    ms(:MuNull)) }
+                                    ms(:MuNil)) }
     end
 
     context 'rescue with exception variable' do
@@ -557,7 +557,7 @@ describe Mulang::Ruby do
       it { check_valid result }
       it { expect(result).to eq try([ [ ms(:VariablePattern, :e),
                                         simple_send(ms(:Self), :baz, []) ] ],
-                                    ms(:MuNull)) }
+                                    ms(:MuNil)) }
     end
 
     context 'rescue exception with both type and variable' do
@@ -572,7 +572,7 @@ describe Mulang::Ruby do
       it { check_valid result }
       it { expect(result).to eq try([ [ ms(:AsPattern, :e, ms(:TypePattern, :RuntimeError)),
                                         simple_send(ms(:Self), :baz, []) ] ],
-                                    ms(:MuNull)) }
+                                    ms(:MuNil)) }
     end
 
     context 'rescue exception with multiple catches' do
@@ -591,7 +591,7 @@ describe Mulang::Ruby do
                                         simple_send(ms(:Self), :baz, []) ],
                                       [ ms(:AsPattern, :e, ms(:TypePattern, :RangeError)),
                                         simple_send(ms(:Self), :foobar, []) ] ],
-                                    ms(:MuNull)) }
+                                    ms(:MuNil)) }
     end
 
     context 'rescue with begin keyword' do
@@ -608,7 +608,7 @@ describe Mulang::Ruby do
       it { check_valid result }
       it { expect(result).to eq try([ [ ms(:WildcardPattern),
                                         simple_send(ms(:Self), :baz, []) ] ],
-                                    ms(:MuNull)) }
+                                    ms(:MuNil)) }
     end
 
     context 'rescue with ensure' do

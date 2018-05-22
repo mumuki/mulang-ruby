@@ -28,13 +28,13 @@ module Mulang::Ruby
 
     def on_rescue(node)
       try, *catch, _ = *node
-      ms :Try, process(try), process_all(catch), ms(:MuNull)
+      ms :Try, process(try), process_all(catch), ms(:MuNil)
     end
 
     def on_resbody(node)
       patterns, variable, block = *node
 
-      [to_mulang_pattern(patterns, variable), process(block) || ms(:MuNull)]
+      [to_mulang_pattern(patterns, variable), process(block) || ms(:MuNil)]
     end
 
     def _
@@ -75,7 +75,7 @@ module Mulang::Ruby
     end
 
     def on_irange(node)
-      ms :Other
+      ms :Other, node.to_s, nil
     end
 
     def on_regexp(node)
@@ -139,7 +139,7 @@ module Mulang::Ruby
     end
 
     def on_nil(_)
-      ms :MuNull
+      ms :MuNil
     end
 
     def on_self(_)
@@ -257,7 +257,7 @@ module Mulang::Ruby
 
     def handler_missing(*args)
       puts args
-      ms :Other
+      ms :Other, args.to_s, nil
     end
 
     def handle_send_with_args(node, extra_args=[])

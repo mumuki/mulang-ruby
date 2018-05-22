@@ -2,7 +2,7 @@ module Mulang::Ruby
   module Sexp
     def sequence(*contents)
       if contents.empty?
-        ms(:MuNull)
+        ms(:MuNil)
       elsif contents.size == 1
         contents[0]
       else
