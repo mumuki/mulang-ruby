@@ -1,5 +1,5 @@
 require 'ast'
-require 'parser/current'
+require 'parser/ruby23'
 require 'mumukit/core'
 
 require_relative "./ruby/version"

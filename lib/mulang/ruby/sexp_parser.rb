@@ -4,7 +4,7 @@ module Mulang::Ruby
     Parser::Builders::Default.emit_procarg0 = true
 
     def self.parser(ruby_code)
-      parser = Parser::CurrentRuby.new
+      parser = Parser::Ruby23.new
       parser.diagnostics.consumer = lambda {|it|}
       buffer = Parser::Source::Buffer.new('(string)')
       buffer.source = ruby_code
