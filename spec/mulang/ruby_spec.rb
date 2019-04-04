@@ -676,6 +676,13 @@ describe Mulang::Ruby do
       it { check_valid result }
       it { expect(result).to eq(simple_method(:foo, [ms(:OtherPattern, "(optarg :a\n  (int 123))", nil)], ms(:MuNil)))}
     end
+
+    context 'it does not break on empty blocks' do
+      let(:code) { '[].map {}' }
+
+      it { check_valid result }
+      it { expect(result).to eq(simple_send(ms(:MuList, []), :map, [ms(:Lambda, [], ms(:MuNil))]))}
+    end
   end
 end
 
