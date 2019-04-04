@@ -151,6 +151,10 @@ module Mulang::Ruby
       ms :VariablePattern, name
     end
 
+    def on_optarg(node)
+      ms :OtherPattern, node.to_s, nil
+    end
+
     alias on_restarg on_arg
     alias on_procarg0 on_arg
 
