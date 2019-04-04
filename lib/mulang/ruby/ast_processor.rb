@@ -260,7 +260,6 @@ module Mulang::Ruby
     end
 
     def handler_missing(*args)
-      puts args
       ms :Other, args.to_s, nil
     end
 
