@@ -11,7 +11,7 @@ module Mulang
     end
 
     def self.language
-      Mumukit::Language::External.new { |it| parse(it) }
+      Mulang::Language::External.new { |it| parse(it) }
     end
   end
 end
