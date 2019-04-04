@@ -670,6 +670,12 @@ describe Mulang::Ruby do
       it { expect(result).to eq(Mulang::Ruby.parse('a = a && false'))}
     end
 
+    context 'it does not break on parameters with default value' do
+      let(:code) { 'def foo(a = 123); end' }
+
+      it { check_valid result }
+      it { expect(result).to eq(simple_method(:foo, [ms(:OtherPattern, "(optarg :a\n  (int 123))", nil)], ms(:MuNil)))}
+    end
   end
 end
 
