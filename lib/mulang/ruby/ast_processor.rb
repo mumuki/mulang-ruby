@@ -130,7 +130,7 @@ module Mulang::Ruby
 
     def on_block(node)
       send, parameters, body = *node
-      lambda = ms(:Lambda, process_all(parameters), process(body))
+      lambda = ms(:Lambda, process_all(parameters), process(body) || ms(:MuNil))
       handle_send_with_args send, [lambda]
     end
 
