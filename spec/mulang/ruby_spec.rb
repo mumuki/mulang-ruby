@@ -683,6 +683,27 @@ describe Mulang::Ruby do
       it { check_valid result }
       it { expect(result).to eq(simple_send(ms(:MuList, []), :map, [ms(:Lambda, [], ms(:MuNil))]))}
     end
+
+    context 'it parses empty for' do
+      let(:code) { 'for number in [1,2,3]; end' }
+
+      it { check_valid result }
+      it { expect(result).to eq(ms(:For, [ms(:Generator, ms(:VariablePattern, :number), ms(:MuList, ms(:MuNumber, 1), ms(:MuNumber, 2), ms(:MuNumber, 3)))], ms(:MuNil)))}
+    end
+
+    context 'it parses for with code' do
+      let(:code) { 'for number in [1,2,3]; foo; end' }
+
+      it { check_valid result }
+      it { expect(result).to eq(ms(:For, [ms(:Generator, ms(:VariablePattern, :number), ms(:MuList, ms(:MuNumber, 1), ms(:MuNumber, 2), ms(:MuNumber, 3)))], simple_send(ms(:Self), :foo, [])))}
+    end
+
+    context 'it parses for with more code' do
+      let(:code) { 'for number in [1,2,3]; foo; bar; end' }
+
+      it { check_valid result }
+      it { expect(result).to eq(ms(:For, [ms(:Generator, ms(:VariablePattern, :number), ms(:MuList, ms(:MuNumber, 1), ms(:MuNumber, 2), ms(:MuNumber, 3)))], ms(:Sequence, [simple_send(ms(:Self), :foo, []), simple_send(ms(:Self), :bar, [])])))}
+    end
   end
 end
 

@@ -151,6 +151,13 @@ module Mulang::Ruby
       ms :VariablePattern, name
     end
 
+    def on_for(node)
+      variable, list, block = *node
+
+      pattern = ms(:VariablePattern, variable.children.first)
+      ms(:For, [ms(:Generator, pattern, process(list))], process(block) || ms(:MuNil))
+    end
+
     def on_optarg(node)
       ms :OtherPattern, node.to_s, nil
     end
