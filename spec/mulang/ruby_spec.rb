@@ -468,22 +468,22 @@ describe Mulang::Ruby do
 
     context 'hash def' do
       let(:code) { %q{def hash;end} }
-      it { expect(result).to eq mu_method :HashMethod, [], ms(:MuNil) }
+      it { expect(result).to eq mu_primitive_method :HashMethod, [], ms(:MuNil) }
     end
 
     context 'equal? def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNil) }
+      it { expect(result).to eq mu_primitive_method :EqualMethod, [], ms(:MuNil) }
     end
 
     context 'eql? def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNil) }
+      it { expect(result).to eq mu_primitive_method :EqualMethod, [], ms(:MuNil) }
     end
 
     context '== def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq mu_method :EqualMethod, [], ms(:MuNil) }
+      it { expect(result).to eq mu_primitive_method :EqualMethod, [], ms(:MuNil) }
     end
 
     context 'rescue with no action' do

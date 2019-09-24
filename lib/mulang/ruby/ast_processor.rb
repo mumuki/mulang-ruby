@@ -120,9 +120,9 @@ module Mulang::Ruby
 
       case id
       when :equal?, :eql?, :==
-        mu_method :EqualMethod, process_all(args), process(body)
+        mu_primitive_method :Equal, process_all(args), process(body)
       when :hash
-        mu_method :HashMethod, process_all(args), process(body)
+        mu_primitive_method :Hash, process_all(args), process(body)
       else
         simple_method id, process_all(args), process(body)
       end
@@ -274,15 +274,27 @@ module Mulang::Ruby
       receptor, message, *args = *node
       receptor ||= s(:self)
 
-      if message == :==
-        message = {tag: :Equal}
-      elsif message == :!=
-        message = {tag: :NotEqual}
-      else
-        message = {tag: :Reference, contents: message}
-      end
+      ms :Send, process(receptor), handle_message(message), (process_all(args) + extra_args)
+    end
 
-      ms :Send, process(receptor), message, (process_all(args) + extra_args)
+    def handle_message(message)
+      case message
+        when :==    then ms :Primitive, :Equal
+        when :!=    then ms :Primitive, :NotEqual
+        when :!     then ms :Primitive, :Negation
+        when :'&&'  then ms :Primitive, :And
+        when :'||'  then ms :Primitive, :Or
+        when :hash  then ms :Primitive, :Hash
+        when :>=    then ms :Primitive, :GreatherOrEqualThan
+        when :>     then ms :Primitive, :GreatherThan
+        when :<=    then ms :Primitive, :LessOrEqualThan
+        when :<     then ms :Primitive, :LessThan
+        when :+     then ms :Primitive, :Plus
+        when :-     then ms :Primitive, :Minus
+        when :*     then ms :Primitive, :Multiply
+        when :/     then ms :Primitive, :Divide
+        else ms :Reference, message
+      end
     end
 
   end

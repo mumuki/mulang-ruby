@@ -24,7 +24,7 @@ module Mulang::Ruby
       {
         tag: :Method,
         contents: [
-          name, 
+          name,
           [
             [ args, {tag: :UnguardedBody, contents: body }]
           ]
@@ -32,10 +32,11 @@ module Mulang::Ruby
       }
     end
 
-    def mu_method(tag, args, body)
+    def mu_primitive_method(type, args, body)
       {
-        tag: tag,
+        tag: :PrimitiveMethod,
         contents: [
+          type,
           [ args, {tag: :UnguardedBody, contents: body }]
         ]
       }
