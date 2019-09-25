@@ -43,7 +43,11 @@ module Mulang::Ruby
     end
 
     def simple_send(sender, message, args)
-      ms(:Send, sender, {tag: :Reference, contents: message}, args)
+      ms(:Send, sender, ms(:Reference, message), args)
+    end
+
+    def primitive_send(sender, op, args)
+      ms(:Send, sender, ms(:Primitive, op), args)
     end
   end
 end

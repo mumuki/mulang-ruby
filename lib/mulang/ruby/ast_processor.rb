@@ -217,7 +217,7 @@ module Mulang::Ruby
 
     def var_assignment(assignee, message, value)
       id = assignee.to_a.first
-      ms :Assignment, id, simple_send(ms(:Reference, id), message, [process(value)])
+      ms :Assignment, id, ms(:Send, ms(:Reference, id), message_reference(message), [process(value)])
     end
 
     def property_assignment(assignee, message, value)
@@ -229,9 +229,9 @@ module Mulang::Ruby
     def reasign(accessor, args, id, message, value)
       simple_send id,
                   "#{accessor}=".to_sym,
-                  args + [simple_send(
+                  args + [ms(:Send,
                             simple_send(id, accessor, args),
-                            message,
+                            message_reference(message),
                             [value])]
     end
 
@@ -274,10 +274,10 @@ module Mulang::Ruby
       receptor, message, *args = *node
       receptor ||= s(:self)
 
-      ms :Send, process(receptor), handle_message(message), (process_all(args) + extra_args)
+      ms :Send, process(receptor), message_reference(message), (process_all(args) + extra_args)
     end
 
-    def handle_message(message)
+    def message_reference(message)
       case message
         when :==    then ms :Primitive, :Equal
         when :!=    then ms :Primitive, :NotEqual

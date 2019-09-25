@@ -129,19 +129,19 @@ describe Mulang::Ruby do
 
     context 'math expressions' do
       let(:code) { %q{4 + 5} }
-      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), ms(:Reference, :+), [ms(:MuNumber, 5)] }
+      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), ms(:Primitive, :Plus), [ms(:MuNumber, 5)] }
       it { check_valid result }
     end
 
     context 'equal comparisons' do
       let(:code) { %q{ 4 == 3 } }
-      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), {tag: :Equal}, [ms(:MuNumber, 3)] }
+      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), ms(:Primitive, :Equal), [ms(:MuNumber, 3)] }
       it { check_valid result }
     end
 
     context 'not equal comparisons' do
       let(:code) { %q{ 4 != 3 } }
-      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), {tag: :NotEqual}, [ms(:MuNumber, 3)] }
+      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), ms(:Primitive, :NotEqual), [ms(:MuNumber, 3)] }
       it { check_valid result }
     end
 
@@ -182,7 +182,7 @@ describe Mulang::Ruby do
         it { expect(result).to eq simple_send list, :map, [
                                     ms(:Lambda,
                                       [ms(:VariablePattern, :x)],
-                                      simple_send(ms(:Reference, :x), :+, [ms(:MuNumber, 1)]))] }
+                                      primitive_send(ms(:Reference, :x), :Plus, [ms(:MuNumber, 1)]))] }
         it { check_valid result }
       end
 
@@ -192,7 +192,7 @@ describe Mulang::Ruby do
                                     ms(:MuNumber, 0),
                                     ms(:Lambda,
                                       [ms(:VariablePattern, :x), ms(:VariablePattern, :y)],
-                                      simple_send(ms(:Reference, :x), :+, [ms(:Reference, :y)]))] }
+                                      primitive_send(ms(:Reference, :x), :Plus, [ms(:Reference, :y)]))] }
         it { check_valid result }
       end
     end
@@ -202,7 +202,7 @@ describe Mulang::Ruby do
         a = 2
         a + 6
       } }
-      it { expect(result[:contents][1]).to eq simple_send(ms(:Reference, :a), :+, [ms(:MuNumber, 6)]) }
+      it { expect(result[:contents][1]).to eq primitive_send(ms(:Reference, :a), :Plus, [ms(:MuNumber, 6)]) }
       it { check_valid result }
     end
 
@@ -468,22 +468,22 @@ describe Mulang::Ruby do
 
     context 'hash def' do
       let(:code) { %q{def hash;end} }
-      it { expect(result).to eq mu_primitive_method :HashMethod, [], ms(:MuNil) }
+      it { expect(result).to eq mu_primitive_method :Hash, [], ms(:MuNil) }
     end
 
     context 'equal? def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq mu_primitive_method :EqualMethod, [], ms(:MuNil) }
+      it { expect(result).to eq mu_primitive_method :Equal, [], ms(:MuNil) }
     end
 
     context 'eql? def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq mu_primitive_method :EqualMethod, [], ms(:MuNil) }
+      it { expect(result).to eq mu_primitive_method :Equal, [], ms(:MuNil) }
     end
 
     context '== def' do
       let(:code) { %q{def equal?;end} }
-      it { expect(result).to eq mu_primitive_method :EqualMethod, [], ms(:MuNil) }
+      it { expect(result).to eq mu_primitive_method :Equal, [], ms(:MuNil) }
     end
 
     context 'rescue with no action' do
