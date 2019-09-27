@@ -21,13 +21,13 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.14"
+  spec.add_development_dependency "bundler", '>= 1.1', '< 3'
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry"
 
-  spec.add_dependency "parser"
-  spec.add_dependency "ast"
+  spec.add_dependency "parser", "~> 2.6"
+  spec.add_dependency "ast", "~> 2.4"
   spec.add_dependency "mumukit-core", "~> 1.0"
-  spec.add_dependency "mulang", ">= 4.0", '< 6'
+  spec.add_dependency "mulang", "~> 5.0"
 end
