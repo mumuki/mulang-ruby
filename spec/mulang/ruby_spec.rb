@@ -20,8 +20,8 @@ describe Mulang::Ruby do
     let(:result) { Mulang::Ruby.parse code }
 
     context 'syntax errors' do
-      let(:code) { %q{module Pepita} }
-      it { expect { result }.to raise_error 'Syntax error' }
+      let(:code) { %q{@!syntax error} }
+      it { expect { result }.to raise_error Parser::SyntaxError }
     end
 
     context 'simple module' do
