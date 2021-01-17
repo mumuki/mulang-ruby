@@ -279,20 +279,22 @@ module Mulang::Ruby
 
     def message_reference(message)
       case message
-        when :==    then ms :Primitive, :Equal
-        when :!=    then ms :Primitive, :NotEqual
-        when :!     then ms :Primitive, :Negation
-        when :'&&'  then ms :Primitive, :And
-        when :'||'  then ms :Primitive, :Or
-        when :hash  then ms :Primitive, :Hash
-        when :>=    then ms :Primitive, :GreatherOrEqualThan
-        when :>     then ms :Primitive, :GreatherThan
-        when :<=    then ms :Primitive, :LessOrEqualThan
-        when :<     then ms :Primitive, :LessThan
-        when :+     then ms :Primitive, :Plus
-        when :-     then ms :Primitive, :Minus
-        when :*     then ms :Primitive, :Multiply
-        when :/     then ms :Primitive, :Divide
+        when :==     then ms :Primitive, :Equal
+        when :!=     then ms :Primitive, :NotEqual
+        when :!      then ms :Primitive, :Negation
+        when :'&&'   then ms :Primitive, :And
+        when :'||'   then ms :Primitive, :Or
+        when :hash   then ms :Primitive, :Hash
+        when :>=     then ms :Primitive, :GreatherOrEqualThan
+        when :>      then ms :Primitive, :GreatherThan
+        when :<=     then ms :Primitive, :LessOrEqualThan
+        when :<      then ms :Primitive, :LessThan
+        when :+      then ms :Primitive, :Plus
+        when :-      then ms :Primitive, :Minus
+        when :*      then ms :Primitive, :Multiply
+        when :/      then ms :Primitive, :Divide
+        when :length then ms :Primitive, :Size
+        when :size   then ms :Primitive, :Size
         else ms :Reference, message
       end
     end

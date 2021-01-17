@@ -29,5 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "parser", "~> 2.6"
   spec.add_dependency "ast", "~> 2.4"
   spec.add_dependency "mumukit-core", "~> 1.0"
-  spec.add_dependency "mulang", "~> 5.0"
+  spec.add_dependency "mulang", "~> 6.0"
 end
