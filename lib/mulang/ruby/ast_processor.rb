@@ -28,13 +28,13 @@ module Mulang::Ruby
 
     def on_rescue(node)
       try, *catch, _ = *node
-      ms :Try, process(try), process_all(catch), ms(:MuNil)
+      ms :Try, process(try), process_all(catch), none
     end
 
     def on_resbody(node)
       patterns, variable, block = *node
 
-      [to_mulang_pattern(patterns, variable), process(block) || ms(:MuNil)]
+      [to_mulang_pattern(patterns, variable), process(block) || none]
     end
 
     def _
@@ -120,9 +120,9 @@ module Mulang::Ruby
 
       case id
       when :equal?, :eql?, :==
-        mu_primitive_method :Equal, process_all(args), process(body)
+        primitive_method :Equal, process_all(args), process(body)
       when :hash
-        mu_primitive_method :Hash, process_all(args), process(body)
+        primitive_method :Hash, process_all(args), process(body)
       else
         simple_method id, process_all(args), process(body)
       end
@@ -130,7 +130,7 @@ module Mulang::Ruby
 
     def on_block(node)
       send, parameters, body = *node
-      lambda = ms(:Lambda, process_all(parameters), process(body) || ms(:MuNil))
+      lambda = ms(:Lambda, process_all(parameters), process(body) || none)
       handle_send_with_args send, [lambda]
     end
 
@@ -155,7 +155,7 @@ module Mulang::Ruby
       variable, list, block = *node
 
       pattern = ms(:VariablePattern, variable.children.first)
-      ms(:For, [ms(:Generator, pattern, process(list))], process(block) || ms(:MuNil))
+      ms(:For, [ms(:Generator, pattern, process(list))], process(block) || none)
     end
 
     def on_optarg(node)
@@ -279,22 +279,22 @@ module Mulang::Ruby
 
     def message_reference(message)
       case message
-        when :==     then ms :Primitive, :Equal
-        when :!=     then ms :Primitive, :NotEqual
-        when :!      then ms :Primitive, :Negation
-        when :'&&'   then ms :Primitive, :And
-        when :'||'   then ms :Primitive, :Or
-        when :hash   then ms :Primitive, :Hash
-        when :>=     then ms :Primitive, :GreatherOrEqualThan
-        when :>      then ms :Primitive, :GreatherThan
-        when :<=     then ms :Primitive, :LessOrEqualThan
-        when :<      then ms :Primitive, :LessThan
-        when :+      then ms :Primitive, :Plus
-        when :-      then ms :Primitive, :Minus
-        when :*      then ms :Primitive, :Multiply
-        when :/      then ms :Primitive, :Divide
-        when :length then ms :Primitive, :Size
-        when :size   then ms :Primitive, :Size
+        when :==     then primitive :Equal
+        when :!=     then primitive :NotEqual
+        when :!      then primitive :Negation
+        when :'&&'   then primitive :And
+        when :'||'   then primitive :Or
+        when :hash   then primitive :Hash
+        when :>=     then primitive :GreatherOrEqualThan
+        when :>      then primitive :GreatherThan
+        when :<=     then primitive :LessOrEqualThan
+        when :<      then primitive :LessThan
+        when :+      then primitive :Plus
+        when :-      then primitive :Minus
+        when :*      then primitive :Multiply
+        when :/      then primitive :Divide
+        when :length then primitive :Size
+        when :size   then primitive :Size
         else ms :Reference, message
       end
     end
