@@ -23,7 +23,11 @@ module Mulang::Ruby
     end
 
     def on_begin(node)
-      sequence(*process_all(node))
+      if node.children.size == 1 && node.children[0].nil?
+        none # ruby < 2.6 only
+      else
+        sequence(*process_all(node))
+      end
     end
 
     def on_rescue(node)

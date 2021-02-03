@@ -12,7 +12,11 @@ RSpec.configure do |config|
 end
 
 def check_valid(mulang_ast)
-  out = Mulang::Code.new(Mulang::Language::External.new, mulang_ast).analyse smellsSet: { tag: "NoSmells" }, expectations: []
+  out = Mulang::Code.new(Mulang::Language::External.new, mulang_ast).analyse({})
   expect(out['tag']).to eq 'AnalysisCompleted'
 end
 
+def check_invalid(mulang_ast)
+  out = Mulang::Code.new(Mulang::Language::External.new, mulang_ast).analyse({})
+  expect(out['tag']).to eq 'AnalysisFailed'
+end
