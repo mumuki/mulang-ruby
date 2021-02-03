@@ -704,5 +704,18 @@ describe Mulang::Ruby do
       it { check_valid result }
       it { expect(result).to eq(ms(:For, [ms(:Generator, ms(:VariablePattern, :number), ms(:MuList, ms(:MuNumber, 1), ms(:MuNumber, 2), ms(:MuNumber, 3)))], ms(:Sequence, [simple_send(ms(:Self), :foo, []), simple_send(ms(:Self), :bar, [])])))}
     end
+
+    context 'parses `else without rescue is useless` scenario' do
+      let(:code) {
+        %q{
+          def Y
+          else
+          end
+        }
+      }
+
+      it { check_valid result }
+      it { expect(result).to be nil }
+    end
   end
 end
