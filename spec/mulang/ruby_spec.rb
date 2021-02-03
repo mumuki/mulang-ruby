@@ -724,5 +724,16 @@ describe Mulang::Ruby do
       it { check_valid result }
       it { expect(result).to eq simple_method(:y, [], none) }
     end
+
+    context 'parses parenthesis in args' do
+      let(:code) { "foo { |(x)| }" }
+
+      it { check_valid result }
+      it { expect(result).to eq :tag=>:Send,
+                                :contents=>
+                                [{:tag=>:Self},
+                                  {:tag=>:Reference, :contents=>:foo},
+                                  [{:tag=>:Lambda, :contents=>[[{:tag=>:VariablePattern, :contents=>:x}], {:tag=>:MuNil}]}]] }
+    end
   end
 end

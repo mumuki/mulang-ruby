@@ -152,7 +152,11 @@ module Mulang::Ruby
 
     def on_arg(node)
       name, _ = *node
-      ms :VariablePattern, name
+      if name.is_a? Parser::AST::Node
+        process name
+      else
+        ms :VariablePattern, name
+      end
     end
 
     def on_for(node)
