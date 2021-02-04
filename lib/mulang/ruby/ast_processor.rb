@@ -23,7 +23,11 @@ module Mulang::Ruby
     end
 
     def on_begin(node)
-      sequence(*process_all(node))
+      if node.children.size == 1 && node.children[0].nil?
+        none # ruby < 2.6 only
+      else
+        sequence(*process_all(node))
+      end
     end
 
     def on_rescue(node)
@@ -148,7 +152,11 @@ module Mulang::Ruby
 
     def on_arg(node)
       name, _ = *node
-      ms :VariablePattern, name
+      if name.is_a? Parser::AST::Node
+        process name
+      else
+        ms :VariablePattern, name
+      end
     end
 
     def on_for(node)
