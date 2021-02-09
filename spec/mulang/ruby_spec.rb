@@ -17,6 +17,12 @@ describe Mulang::Ruby do
     expect(Mulang::Ruby::VERSION).not_to be nil
   end
 
+  describe '#language' do
+    it { expect(Mulang::Ruby.language.ast "4").to eq ms(:MuNumber, 4) }
+    it { expect(Mulang::Ruby.language.name).to eq 'Ruby' }
+    it { expect(Mulang::Ruby.language.core_name).to eq 'Ruby' }
+  end
+
   describe '#parse' do
     let(:result) { Mulang::Ruby.language.ast code }
 

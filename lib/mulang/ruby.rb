@@ -11,7 +11,7 @@ module Mulang
     end
 
     def self.language(parser_class: nil)
-      Mulang::Language::External.new("Ruby") { |it| parse(it, parser_class) }
+      Mulang::Language::External.new("Ruby") { |it| parse(it, parser_class: parser_class) }
     end
 
     private
