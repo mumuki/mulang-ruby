@@ -1,4 +1,5 @@
 require "spec_helper"
+require 'parser/ruby24'
 
 def try(catches, finally)
   simple_method(:foo, [],
@@ -720,8 +721,17 @@ describe Mulang::Ruby do
         }
       }
 
-      it { check_invalid result }
-      it { expect(result).to be nil }
+      context 'ruby 2.4' do
+        let(:result) { Mulang::Ruby.parse code, parser_class: Parser::Ruby24 }
+
+        it { check_valid result }
+        it { expect(result).to eq simple_method(:y, [], none) }
+      end
+
+      context 'default ruby' do
+        it { check_invalid result }
+        it { expect(result).to be nil }
+      end
     end
 
     context 'parses parenthesis in args' do

@@ -3,8 +3,8 @@ module Mulang::Ruby
     Parser::Builders::Default.emit_lambda = true
     Parser::Builders::Default.emit_procarg0 = true
 
-    def self.parser(ruby_code)
-      parser = Parser::Ruby26.new
+    def self.parser(ruby_code, parser_class)
+      parser = parser_class.new
       parser.diagnostics.consumer = lambda {|it|}
       parser.diagnostics.all_errors_are_fatal = true
       buffer = Parser::Source::Buffer.new('(string)')
