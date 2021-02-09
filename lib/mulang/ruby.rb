@@ -6,7 +6,7 @@ require_relative "./ruby/version"
 module Mulang
   module Ruby
     def self.parse(ruby_code, parser_class: nil)
-      parser_class ||= default_ruby_parser_class
+      parser_class ||= default_parser_class
       Mulang::Ruby::AstProcessor.new.process Mulang::Ruby::SexpParser.parser(ruby_code, parser_class)
     end
 
@@ -16,7 +16,7 @@ module Mulang
 
     private
 
-    def self.default_ruby_parser_class
+    def self.default_parser_class
       Parser::Ruby26
     end
   end
