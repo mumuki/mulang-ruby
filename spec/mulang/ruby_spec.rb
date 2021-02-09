@@ -720,8 +720,8 @@ describe Mulang::Ruby do
         }
       }
 
-      it { check_valid result }
-      it { expect(result).to eq simple_method(:y, [], none) }
+      it { check_invalid result }
+      it { expect(result).to be nil }
     end
 
     context 'parses parenthesis in args' do
