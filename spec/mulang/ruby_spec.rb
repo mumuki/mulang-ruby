@@ -17,11 +17,11 @@ describe Mulang::Ruby do
   end
 
   describe '#parse' do
-    let(:result) { Mulang::Ruby.parse code }
+    let(:result) { Mulang::Ruby.language.ast code }
 
     context 'syntax errors' do
       let(:code) { %q{@!syntax error} }
-      it { expect { result }.to raise_error Parser::SyntaxError }
+      it { check_invalid result }
     end
 
     context 'simple module' do
@@ -709,7 +709,6 @@ describe Mulang::Ruby do
       let(:code) { "def y" }
 
       it { check_invalid result }
-      it { expect(result).to be nil }
     end
 
     context 'parses `else without rescue is useless` scenario' do
