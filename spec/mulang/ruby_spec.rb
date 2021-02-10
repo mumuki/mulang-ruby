@@ -1,4 +1,5 @@
 require "spec_helper"
+require 'parser/ruby24'
 
 def try(catches, finally)
   simple_method(:foo, [],
@@ -14,6 +15,12 @@ describe Mulang::Ruby do
 
   it "has a version number" do
     expect(Mulang::Ruby::VERSION).not_to be nil
+  end
+
+  describe '#language' do
+    it { expect(Mulang::Ruby.language.ast "4").to eq ms(:MuNumber, 4) }
+    it { expect(Mulang::Ruby.language.name).to eq 'Ruby' }
+    it { expect(Mulang::Ruby.language.core_name).to eq 'Ruby' }
   end
 
   describe '#parse' do
@@ -720,8 +727,17 @@ describe Mulang::Ruby do
         }
       }
 
-      it { check_valid result }
-      it { expect(result).to eq simple_method(:y, [], none) }
+      context 'ruby 2.4' do
+        let(:result) { Mulang::Ruby.parse code, parser_class: Parser::Ruby24 }
+
+        it { check_valid result }
+        it { expect(result).to eq simple_method(:y, [], none) }
+      end
+
+      context 'default ruby' do
+        it { check_invalid result }
+        it { expect(result).to be nil }
+      end
     end
 
     context 'parses parenthesis in args' do
