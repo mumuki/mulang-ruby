@@ -3,9 +3,12 @@ module Mulang::Ruby
     include AST::Sexp
     include Mulang::Ruby::Sexp
 
+    def process(node)
+      node.nil? ? none : super
+    end
+
     def on_class(node)
       name, superclass, body = *node
-      body ||= s(:nil)
 
       _, class_name = *name
       _, superclass_name = *superclass
@@ -15,7 +18,6 @@ module Mulang::Ruby
 
     def on_module(node)
       name, body = *node
-      body ||= s(:nil)
 
       _, module_name = *name
 
@@ -113,14 +115,12 @@ module Mulang::Ruby
 
     def on_defs(node)
       _target, id, args, body = *node
-      body ||= s(:nil)
 
       simple_method id, process_all(args), process(body)
     end
 
     def on_def(node)
       id, args, body = *node
-      body ||= s(:nil)
 
       case id
       when :equal?, :eql?, :==
@@ -143,7 +143,7 @@ module Mulang::Ruby
     end
 
     def on_nil(_)
-      ms :MuNil
+      mnil
     end
 
     def on_self(_)
@@ -192,8 +192,6 @@ module Mulang::Ruby
 
     def on_if(node)
       condition, if_true, if_false = *node
-      if_true  ||= s(:nil)
-      if_false ||= s(:nil)
 
       ms :If, process(condition), process(if_true), process(if_false)
     end

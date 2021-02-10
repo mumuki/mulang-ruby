@@ -159,7 +159,7 @@ describe Mulang::Ruby do
 
      context 'nil' do
       let(:code) { %q{nil} }
-      it { expect(result).to eq ms :MuNil }
+      it { expect(result).to eq mnil }
       it { check_valid result }
     end
 
@@ -732,7 +732,7 @@ describe Mulang::Ruby do
                                 :contents=>
                                 [{:tag=>:Self},
                                   {:tag=>:Reference, :contents=>:foo},
-                                  [{:tag=>:Lambda, :contents=>[[{:tag=>:VariablePattern, :contents=>:x}], {:tag=>:MuNil}]}]] }
+                                  [{:tag=>:Lambda, :contents=>[[{:tag=>:VariablePattern, :contents=>:x}], none]}]] }
     end
   end
 end
