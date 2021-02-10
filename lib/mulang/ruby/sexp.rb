@@ -4,8 +4,9 @@ module Mulang::Ruby
   module Sexp
     include Mulang::Sexp
 
-    def none
+    def mnil
       ms(:MuNil)
     end
   end
+
 end
