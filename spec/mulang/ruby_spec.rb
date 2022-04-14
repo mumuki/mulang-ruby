@@ -219,7 +219,7 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
-    context 'module with module' do
+    context 'module with empty method' do
       let(:code) { %q{
         module Pepita
           def self.canta
@@ -407,13 +407,39 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
-   context 'simple class with methods and parameters' do
+    context 'simple inline class with self method' do
+      let(:code) { %q{
+        class Pepita; def self.canta; end; end
+      } }
+      it { expect(result).to eq ms(:Class, :Pepita, nil, ms(:Decorator, [ms(:Classy)], simple_method(:canta, [], none))) }
+      it { check_valid result }
+    end
+
+    context 'simple eigen method' do
+      let(:code) { %q{
+        def Pepita.canta; end
+      } }
+      it { expect(result).to eq ms(:EigenClass, ms(:Reference, :Pepita), simple_method(:canta, [], none)) }
+      it { check_valid result }
+    end
+
+    context 'simple eigen class' do
+      let(:code) { %q{
+        class << Pepita
+          def canta; end
+        end
+      } }
+      it { expect(result).to eq ms(:EigenClass, ms(:Reference, :Pepita), simple_method(:canta, [], none)) }
+      it { check_valid result }
+    end
+
+    context 'simple class with methods and parameters' do
       let(:code) { %q{
         class Pepita
           def canta!(cancion)
             puts cancion
           end
-          def self.vola!(distancia)
+          def vola!(distancia)
           end
         end
       } }
@@ -424,6 +450,45 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context 'simple class with mixed instance and class methods' do
+      let(:code) { %q{
+        class Pepita
+          def self.nueva
+          end
+          def vola!
+          end
+        end
+      } }
+      it { expect(result).to eq ms(:Class, :Pepita, nil,
+                                  sequence(
+                                    ms(:Decorator, [ms(:Classy)], simple_method(:nueva, [], none)),
+                                    simple_method(:vola!, [], none))) }
+      it { check_valid result }
+    end
+
+    context 'nested modules and classes' do
+      let(:code) { %q{
+        module Birds
+          class Pepita
+            def self.nueva
+            end
+            def vola!
+            end
+          end
+
+          def self.nuevo; end
+        end
+      } }
+      it { expect(result).to eq ms(:Object, :Birds,
+                                    sequence(
+                                      ms(:Class, :Pepita, nil,
+                                        sequence(
+                                          ms(:Decorator, [ms(:Classy)], simple_method(:nueva, [], none)),
+                                          simple_method(:vola!, [], none))),
+                                      simple_method(:nuevo, [], none))) }
+      it { check_valid result }
+    end
+
     context 'mixins' do
       let(:code) { %q{
         class Foo
@@ -431,15 +496,6 @@ describe Mulang::Ruby do
         end
       } }
       it { expect(result).to eq ms :Class, :Foo, nil, simple_send(ms(:Self), :include, [ms(:Reference, :Bar)]) }
-      it { check_valid result }
-    end
-
-    context 'unsupported features' do
-      let(:code) { %q{
-        class << self
-        end
-      } }
-      it { expect(result).to eq ms :Other, "[s(:sclass,\n  s(:self), nil)]", nil }
       it { check_valid result }
     end
 
