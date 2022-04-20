@@ -3,25 +3,47 @@ module Mulang::Ruby
     include AST::Sexp
     include Mulang::Ruby::Sexp
 
+    def initialize
+      @contexts = []
+    end
+
     def process(node)
       node.nil? ? none : super
     end
 
     def on_class(node)
+      @contexts.push :class
+
       name, superclass, body = *node
 
       _, class_name = *name
       _, superclass_name = *superclass
 
       ms :Class, class_name, superclass_name, process(body)
+    ensure
+      @contexts.pop
+    end
+
+    def on_sclass(node)
+      @contexts.push :sclass
+
+      target, body = *node
+
+      ms :EigenClass, process(target), process(body)
+    ensure
+      @contexts.pop
     end
 
     def on_module(node)
+      @contexts.push :module
+
       name, body = *node
 
       _, module_name = *name
 
       ms :Object, module_name, process(body)
+    ensure
+      @contexts.pop
     end
 
     def on_begin(node)
@@ -114,9 +136,19 @@ module Mulang::Ruby
     end
 
     def on_defs(node)
-      _target, id, args, body = *node
+      target, id, args, body = *node
 
-      simple_method id, process_all(args), process(body)
+      result = simple_method id, process_all(args), process(body)
+
+      if target.type == :self
+        if @contexts.last == :module
+          result
+        else
+          ms(:Decorator, [ms(:Classy)], result)
+        end
+      else
+        ms(:EigenClass, process(target), result)
+      end
     end
 
     def on_def(node)
