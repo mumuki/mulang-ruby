@@ -323,8 +323,8 @@ module Mulang::Ruby
         when :'&&'   then primitive :And
         when :'||'   then primitive :Or
         when :hash   then primitive :Hash
-        when :>=     then primitive :GreatherOrEqualThan
-        when :>      then primitive :GreatherThan
+        when :>=     then primitive :GreaterOrEqualThan
+        when :>      then primitive :GreaterThan
         when :<=     then primitive :LessOrEqualThan
         when :<      then primitive :LessThan
         when :+      then primitive :Plus

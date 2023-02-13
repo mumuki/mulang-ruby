@@ -128,6 +128,18 @@ describe Mulang::Ruby do
       it { check_valid result }
     end
 
+    context '> comparison operator' do
+      let(:code) { %q{4 > 5} }
+      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), ms(:Primitive, :GreaterThan), [ms(:MuNumber, 5)] }
+      it { check_valid result }
+    end
+
+    context '>= comparison operator' do
+      let(:code) { %q{4 >= 5} }
+      it { expect(result).to eq ms :Send, ms(:MuNumber, 4), ms(:Primitive, :GreaterOrEqualThan), [ms(:MuNumber, 5)] }
+      it { check_valid result }
+    end
+
     context 'implicit sends' do
       let(:code) { %q{m 5} }
       it { expect(result).to eq ms :Send, ms(:Self), ms(:Reference, :m), [ms(:MuNumber, 5)] }
